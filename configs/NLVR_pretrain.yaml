@@ -1,0 +1,25 @@
+train_file: ['/export/home/project/VL/dataset/caption/coco_karpathy_train.json',
+               '/export/home/project/VL/dataset/caption/vg_caption.json',          
+               '/export/home/project/VL/dataset/pretrain_caption/conceptual_caption_train.json',
+               '/export/home/project/VL/dataset/pretrain_caption/conceptual_caption_val.json',
+               '/export/home/project/VL/dataset/pretrain_caption/sbu_caption.json'               
+               ]
+
+# each train_file (json) contains a python list where each item is {'image': img_path, 'caption': text or list_of_text }  
+
+bert_config: 'configs/config_bert.json'
+
+image_res: 256
+vision_width: 768
+embed_dim: 256
+batch_size: 64
+
+optimizer: {opt: adamW, lr: 2e-5, weight_decay: 0.02}
+schedular: {sched: cosine, lr: 2e-5, epochs: 1, min_lr: 1e-5, decay_rate: 1, warmup_lr: 1e-5, warmup_epochs: 1, cooldown_epochs: 0}
+
+
+
+
+
+
+

@@ -1,0 +1,25 @@
+train_file: 'data/ve_train.json'
+val_file: 'data/ve_dev.json'                
+test_file: 'data/ve_test.json'
+
+image_root: '/export/home/project/SNLI-VE/data/images'
+
+image_res: 384
+batch_size_train: 32 
+batch_size_test: 64 
+
+alpha: 0.4
+distill: True
+warm_up: False
+
+bert_config: 'configs/config_bert.json'
+
+optimizer: {opt: adamW, lr: 2e-5, weight_decay: 0.02}
+schedular: {sched: cosine, lr: 2e-5, epochs: 5, min_lr: 1e-6, decay_rate: 1, warmup_lr: 1e-5, warmup_epochs: 1, cooldown_epochs: 0}
+
+
+
+
+
+
+
