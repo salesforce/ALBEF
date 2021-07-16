@@ -361,7 +361,7 @@ if __name__ == '__main__':
     parser.add_argument('--config', default='./configs/Retrieval_flickr.yaml')
     parser.add_argument('--output_dir', default='output/Retrieval_flickr')        
     parser.add_argument('--checkpoint', default='')   
-    parser.add_argument('--text_encoder', default='bert-large-uncased')
+    parser.add_argument('--text_encoder', default='bert-base-uncased')
     parser.add_argument('--evaluate', action='store_true')
     parser.add_argument('--device', default='cuda')
     parser.add_argument('--seed', default=42, type=int)
