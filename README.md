@@ -1,6 +1,6 @@
 ## Align before Fuse: Vision and Language Representation Learning with Momentum Distillation (Salesforce Research)
 
-This is the official PyTorch implementation of the <a href="">ALBEF paper</a> <a href="">[Blog]</a>. 
+This is the official PyTorch implementation of the <a href="https://arxiv.org/abs/2107.07651">ALBEF paper</a> <a href="">[Blog]</a>. 
 This repository supports pre-training on custom datasets, as well as finetuning on VQA, SNLI-VE, NLVR2, Image-Text Retrieval on MSCOCO and Flickr30k,
 and visual grounding on RefCOCO+. Pre-trained and finetuned checkpoints are released.
 
@@ -96,5 +96,8 @@ We provide the <a href="https://storage.googleapis.com/sfr-pcl-data-research/ALB
 If you find this code to be useful for your research, please consider citing.
 <pre>
 @article{ALBEF,
-
+      title={Align before Fuse: Vision and Language Representation Learning with Momentum Distillation}, 
+      author={Junnan Li and Ramprasaath R. Selvaraju and Akhilesh Deepak Gotmare and Shafiq Joty and Caiming Xiong and Steven Hoi},
+      year={2021},
+      journal={arXiv preprint arXiv:2107.07651},
 }</pre>
