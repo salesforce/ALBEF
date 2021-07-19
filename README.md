@@ -10,6 +10,7 @@ and visual grounding on RefCOCO+. Pre-trained and finetuned checkpoints are rele
 ### Requirements:
 * pytorch 1.8.0
 * transformers 4.8.1
+* timm 0.4.9
 
 ### Download:
 
