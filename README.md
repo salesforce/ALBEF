@@ -17,6 +17,7 @@ and visual grounding on RefCOCO+. Pre-trained and finetuned checkpoints are rele
 * <a href="https://storage.googleapis.com/sfr-pcl-data-research/ALBEF/ALBEF.pth"> Pre-trained checkpoint </a>
 * <a href="https://storage.googleapis.com/sfr-pcl-data-research/ALBEF/data.tar.gz"> Dataset json files </a>
 * <a href="https://storage.googleapis.com/sfr-pcl-data-research/ALBEF/mscoco.pth"> Finetuned checkpoint for retrieval on MSCOCO </a>
+* <a href="https://storage.googleapis.com/sfr-pcl-data-research/ALBEF/flickr30k.pth"> Finetuned checkpoint for retrieval on Flickr30k </a>
 * <a href="https://storage.googleapis.com/sfr-pcl-data-research/ALBEF/vqa.pth"> Finetuned checkpoint for VQA </a>
 * <a href="https://storage.googleapis.com/sfr-pcl-data-research/ALBEF/refcoco.pth"> Finetuned checkpoint for visual grounding on RefCOCO+ </a>
 
