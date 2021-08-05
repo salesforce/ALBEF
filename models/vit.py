@@ -1,5 +1,3 @@
-# Copyright (c) 2015-present, Facebook, Inc.
-# All rights reserved.
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
