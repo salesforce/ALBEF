@@ -98,9 +98,9 @@ We provide the <a href="https://storage.googleapis.com/sfr-pcl-data-research/ALB
 ### Citation
 If you find this code to be useful for your research, please consider citing.
 <pre>
-@article{ALBEF,
+@inproceedings{ALBEF,
       title={Align before Fuse: Vision and Language Representation Learning with Momentum Distillation}, 
       author={Junnan Li and Ramprasaath R. Selvaraju and Akhilesh Deepak Gotmare and Shafiq Joty and Caiming Xiong and Steven Hoi},
       year={2021},
-      journal={NeurIPS},
+      booktitle={NeurIPS},
 }</pre>
