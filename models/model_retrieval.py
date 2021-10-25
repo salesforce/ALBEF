@@ -117,8 +117,8 @@ class ALBEF(nn.Module):
                                        )            
         with torch.no_grad():
             bs = image.size(0)      
-            weights_i2t = F.softmax(sim_i2t[:,:bs],dim=1)
-            weights_t2i = F.softmax(sim_t2i[:,:bs],dim=1)
+            weights_i2t = F.softmax(sim_i2t[:,:bs]+1e-4,dim=1)
+            weights_t2i = F.softmax(sim_t2i[:,:bs]+1e-4,dim=1)
 
             mask = torch.eq(idx, idx.T)
             weights_i2t.masked_fill_(mask, 0)
