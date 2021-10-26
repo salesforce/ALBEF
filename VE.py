@@ -213,6 +213,7 @@ def main(args, config):
                     }
                     torch.save(save_obj, os.path.join(args.output_dir, 'checkpoint_best.pth')) 
                     best = float(val_stats['acc'])
+                    best_epoch = epoch
         
         if args.evaluate:
             break
