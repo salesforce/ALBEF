@@ -1,9 +1,9 @@
-train_file: ['data/coco_karpathy_train.json',
-               'data/vg_caption.json',
+train_file: ['data/coco.json',
+               'data/vg.json',
                'data/cc12m.json',
-               'data/conceptual_caption_train.json',
-               'data/conceptual_caption_val.json',
-               'data/sbu_caption.json'               
+               'data/cc3m_train.json',
+               'data/cc3m_val.json',
+               'data/sbu.json'               
                ]
 # each train_file (json) contains a python list where each item is {'image': img_path, 'caption': text or list_of_text }               
 bert_config: 'configs/config_bert.json'
