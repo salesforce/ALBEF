@@ -1,4 +1,4 @@
-## Align before Fuse: Vision and Language Representation Learning with Momentum Distillation, NeurIPS 2021 Splotlight (Salesforce Research).
+## Align before Fuse: Vision and Language Representation Learning with Momentum Distillation, NeurIPS 2021 Spotlight (Salesforce Research).
 
 This is the official PyTorch implementation of the <a href="https://arxiv.org/abs/2107.07651">ALBEF paper</a> <a href="https://blog.salesforceairesearch.com/align-before-fuse/">[Blog]</a>. 
 This repository supports pre-training on custom datasets, as well as finetuning on VQA, SNLI-VE, NLVR2, Image-Text Retrieval on MSCOCO and Flickr30k,
