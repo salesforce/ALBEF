@@ -8,8 +8,10 @@ from dataset.nlvr_dataset import nlvr_dataset
 from dataset.ve_dataset import ve_dataset
 from dataset.vqa_dataset import vqa_dataset
 from dataset.grounding_dataset import grounding_dataset
+from dataset.ac_dataset import ac_dataset
 
 from dataset.randaugment import RandomAugment
+import os
 
 def create_dataset(dataset, config):
     
@@ -76,6 +78,48 @@ def create_dataset(dataset, config):
         train_dataset = grounding_dataset(config['train_file'], train_transform, config['image_root'], mode='train')       
         test_dataset = grounding_dataset(config['test_file'], test_transform, config['image_root'], mode='test')             
         return train_dataset, test_dataset    
+    elif dataset=='ac':
+        pretrain_transform = transforms.Compose([                        
+            transforms.ToTensor(),
+            normalize,
+        ])    
+        train_transform = transforms.Compose([                        
+                transforms.ToTensor(),
+                normalize,
+            ])  
+        test_transform = transforms.Compose([
+            transforms.ToTensor(),
+            normalize,
+            ])   
+        train_dataset = ac_dataset(
+            os.join(
+                config['data_root'],
+                config['train_file'], 
+            ),
+            train_transform, 
+            config['image_root'],
+            split='train'
+        )  
+        val_dataset = ac_dataset(
+            os.join(
+                config['data_root'],
+                config['val_file'], 
+            ),
+            test_transform, 
+            config['image_root'],
+            split='valid'
+        )  
+        test_dataset = ac_dataset(
+            os.join(
+                config['data_root'],
+                config['test_file'], 
+            ),
+            test_transform, 
+            config['image_root'],
+            split='test'
+        )                
+        return train_dataset, val_dataset, test_dataset     
+
     
 
 def vqa_collate_fn(batch):

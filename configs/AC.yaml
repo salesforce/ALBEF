@@ -1,0 +1,21 @@
+data_root: '/home/docker/project/datasets/mvsa_s'
+
+train_file: 'train.jsonlines'
+val_file: 'valid.jsonlines'                
+test_file: 'test.jsonlines'
+
+
+image_res: 384
+batch_size_train: 32 
+batch_size_test: 64 
+
+alpha: 0.4
+distill: True
+warm_up: False
+
+bert_config: 'configs/config_bert.json'
+
+optimizer: {opt: adamW, lr: 2e-5, weight_decay: 0.02}
+schedular: {sched: cosine, lr: 2e-5, epochs: 5, min_lr: 1e-6, decay_rate: 1, warmup_lr: 1e-5, warmup_epochs: 1, cooldown_epochs: 0}
+
+num_label: 3
