@@ -80,42 +80,36 @@ def create_dataset(dataset, config):
         return train_dataset, test_dataset    
     elif dataset=='ac':
         pretrain_transform = transforms.Compose([                        
+            transforms.Resize((config['image_res'],config['image_res']),
+                interpolation=Image.BICUBIC),
             transforms.ToTensor(),
             normalize,
         ])    
         train_transform = transforms.Compose([                        
-                transforms.ToTensor(),
-                normalize,
-            ])  
-        test_transform = transforms.Compose([
+            transforms.Resize((config['image_res'],config['image_res']),
+                interpolation=Image.BICUBIC),
             transforms.ToTensor(),
             normalize,
-            ])   
+        ])  
+        test_transform = transforms.Compose([
+            transforms.Resize((config['image_res'],config['image_res']),
+                interpolation=Image.BICUBIC),
+            transforms.ToTensor(),
+            normalize,
+        ])   
         train_dataset = ac_dataset(
-            os.join(
-                config['data_root'],
-                config['train_file'], 
-            ),
+            config['data_root'],
             train_transform, 
-            config['image_root'],
             split='train'
         )  
         val_dataset = ac_dataset(
-            os.join(
-                config['data_root'],
-                config['val_file'], 
-            ),
+            config['data_root'],
             test_transform, 
-            config['image_root'],
             split='valid'
         )  
         test_dataset = ac_dataset(
-            os.join(
-                config['data_root'],
-                config['test_file'], 
-            ),
+            config['data_root'],
             test_transform, 
-            config['image_root'],
             split='test'
         )                
         return train_dataset, val_dataset, test_dataset     

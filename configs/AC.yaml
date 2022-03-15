@@ -1,16 +1,16 @@
 data_root: '/home/docker/project/datasets/mvsa_s'
 
-train_file: 'train.jsonlines'
-val_file: 'valid.jsonlines'                
-test_file: 'test.jsonlines'
+train_file: 'train.jsonline'
+val_file: 'valid.jsonline'                
+test_file: 'test.jsonline'
 
 
 image_res: 384
-batch_size_train: 32 
+batch_size_train: 4
 batch_size_test: 64 
 
 alpha: 0.4
-distill: True
+distill: False
 warm_up: False
 
 bert_config: 'configs/config_bert.json'

@@ -22,20 +22,20 @@ def _load_annotations(annotations_jsonpath):
 
 class ac_dataset(Dataset):
     def __init__(self, data_root, transform, split):
-        self.im_root = os.join(
+        self.im_root = os.path.join(
             data_root,
             'image'
         )
         self._entry = _load_annotations(
-            os.join(
+            os.path.join(
                 data_root,
-                split + '.jsonlines'
+                split + '.jsonline'
             )
         )
         self.transform = transform
         
     def __len__(self):
-        return len(self.label)
+        return len(self._entry)
     
     def __getitem__(self, index):    
         label = int(self._entry[index]['label'])

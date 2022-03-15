@@ -1,1 +1,4 @@
+*.py[cod]
+*.pth
 save/*
+output/*

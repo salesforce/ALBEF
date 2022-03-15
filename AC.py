@@ -25,6 +25,8 @@ import utils
 from dataset import create_dataset, create_sampler, create_loader
 from scheduler import create_scheduler
 from optim import create_optimizer
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning) 
 
 
 def train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device, scheduler, config):
@@ -41,7 +43,6 @@ def train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device,
     warmup_iterations = warmup_steps*step_size  
  
     for i,(images, text, targets) in enumerate(metric_logger.log_every(data_loader, print_freq, header)):
-    
         images, targets = images.to(device,non_blocking=True), targets.to(device,non_blocking=True)
         
         text_inputs = tokenizer(text, padding='longest', return_tensors="pt").to(device) 
@@ -99,10 +100,12 @@ def evaluate(model, data_loader, tokenizer, device, config):
     
     
 def main(args, config):
+    utils.init_distributed_mode(args)    
+
     device = torch.device(args.device)
 
     # fix the seed for reproducibility
-    seed = args.seed
+    seed = args.seed + utils.get_rank()
     torch.manual_seed(seed)
     np.random.seed(seed)
     random.seed(seed)
@@ -112,7 +115,12 @@ def main(args, config):
     print("Creating dataset")
     datasets = create_dataset('ac', config) 
     
-    samplers = [None, None, None]
+    if args.distributed:
+        num_tasks = utils.get_world_size()
+        global_rank = utils.get_rank()            
+        samplers = create_sampler(datasets, [True, False, False], num_tasks, global_rank)         
+    else:
+        samplers = [None, None, None]
 
     train_loader, val_loader, test_loader = create_loader(datasets,samplers,
                                                           batch_size=[config['batch_size_train']]+[config['batch_size_test']]*2,
@@ -219,7 +227,7 @@ def main(args, config):
     
     if utils.is_main_process():   
         with open(os.path.join(args.output_dir, "log.txt"),"a") as f:
-            f.write("best epoch: %d"%best_epoch)         
+            f.write("best epoch: %d\n"%best_epoch)         
             
 
 if __name__ == '__main__':
@@ -231,9 +239,9 @@ if __name__ == '__main__':
     parser.add_argument('--evaluate', action='store_true')    
     parser.add_argument('--device', default='cuda')
     parser.add_argument('--seed', default=42, type=int)
-    parser.add_argument('--world_size', default=1, type=int, help='number of distributed processes')    
+    parser.add_argument('--world_size', default=2, type=int, help='number of distributed processes')    
     parser.add_argument('--dist_url', default='env://', help='url used to set up distributed training')
-    parser.add_argument('--distributed', default=False, type=bool)
+    parser.add_argument('--distributed', default=True, type=bool)
     args = parser.parse_args()
 
     config = yaml.load(open(args.config, 'r'), Loader=yaml.Loader)
