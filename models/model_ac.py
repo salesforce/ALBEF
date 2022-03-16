@@ -43,10 +43,16 @@ class ALBEF(nn.Module):
                 mlp_ratio=4, qkv_bias=True, norm_layer=partial(nn.LayerNorm, eps=1e-6))               
             self.text_encoder_m = BertModel.from_pretrained(text_encoder, config=bert_config, add_pooling_layer=False)      
             self.cls_head_m = nn.Sequential(
-                      nn.Linear(self.text_encoder.config.hidden_size, self.text_encoder.config.hidden_size),
-                      nn.ReLU(),
-                      nn.Linear(self.text_encoder.config.hidden_size, 3)
+                    nn.Linear(
+                        self.text_encoder.config.hidden_size, 
+                        self.text_encoder.config.hidden_size
+                    ),
+                    nn.ReLU(),
+                    nn.Linear(
+                        self.text_encoder.config.hidden_size, 
+                        config['num_label']
                     )
+            )
 
             self.model_pairs = [[self.visual_encoder,self.visual_encoder_m],
                                 [self.text_encoder,self.text_encoder_m],

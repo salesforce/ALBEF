@@ -1,12 +1,12 @@
-data_root: '/home/docker/project/datasets/mvsa_m'
+data_root: '/home/docker/project/datasets/yelp'
 
-train_file: 'train.jsonline'
-val_file: 'valid.jsonline'                
-test_file: 'test.jsonline'
+train_file: 'train.json'
+val_file: 'valid.json'                
+test_file: 'test.json'
 
 
 image_res: 384
-batch_size_train: 8
+batch_size_train: 4
 batch_size_test: 64 
 
 alpha: 0.4
@@ -18,4 +18,4 @@ bert_config: 'configs/config_bert.json'
 optimizer: {opt: adamW, lr: 2e-5, weight_decay: 0.02}
 schedular: {sched: cosine, lr: 2e-5, epochs: 5, min_lr: 1e-6, decay_rate: 1, warmup_lr: 1e-5, warmup_epochs: 1, cooldown_epochs: 0}
 
-num_label: 3
+num_label: 5

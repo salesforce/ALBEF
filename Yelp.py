@@ -42,8 +42,8 @@ def train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device,
     step_size = 100
     warmup_iterations = warmup_steps*step_size  
  
-    for i,(images, text, targets) in enumerate(metric_logger.log_every(data_loader, print_freq, header)):
-        images, targets = images.to(device,non_blocking=True), targets.to(device,non_blocking=True)
+    for i,(images, text, label) in enumerate(metric_logger.log_every(data_loader, print_freq, header)):
+        images, label = images.to(device,non_blocking=True), label.to(device,non_blocking=True)
         
         text_inputs = tokenizer(text, padding='longest', return_tensors="pt").to(device) 
         
@@ -52,7 +52,7 @@ def train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device,
         else:
             alpha = config['alpha']*min(1,i/len(data_loader))
 
-        loss = model(images, text_inputs, label=targets, train=True, alpha=alpha)    
+        loss = model(images, text_inputs, label=label, train=True, alpha=alpha)    
         
         optimizer.zero_grad()
         loss.backward()
@@ -113,7 +113,7 @@ def main(args, config):
 
     #### Dataset #### 
     print("Creating dataset")
-    datasets = create_dataset('AC', config) 
+    datasets = create_dataset('Yelp', config) 
     
     if args.distributed:
         num_tasks = utils.get_world_size()
@@ -232,8 +232,8 @@ def main(args, config):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config', default='./configs/AC.yaml')
-    parser.add_argument('--output_dir', default='output/AC')  
+    parser.add_argument('--config', default='./configs/Yelp.yaml')
+    parser.add_argument('--output_dir', default='output/Yelp')  
     parser.add_argument('--checkpoint', default='save/pretrained.pth')   
     parser.add_argument('--text_encoder', default='bert-base-uncased')
     parser.add_argument('--evaluate', action='store_true')    
@@ -251,4 +251,3 @@ if __name__ == '__main__':
     yaml.dump(config, open(os.path.join(args.output_dir, 'config.yaml'), 'w'))    
     
     main(args, config)
-

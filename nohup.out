@@ -1,0 +1,23 @@
+python -m torch.distributed.launch --nproc_per_node=4 --use_env Yelp.py
+| distributed init (rank 2): env://
+| distributed init (rank 0): env://
+| distributed init (rank 3): env://
+| distributed init (rank 1): env://
+Creating dataset
+Creating model
+reshape position embedding from 256 to 576
+reshape position embedding from 256 to 576
+load checkpoint from save/pretrained.pth
+_IncompatibleKeys(missing_keys=['cls_head.0.weight', 'cls_head.0.bias', 'cls_head.2.weight', 'cls_head.2.bias', 'cls_head_m.0.weight', 'cls_head_m.0.bias', 'cls_head_m.2.weight', 'cls_head_m.2.bias'], unexpected_keys=['temp', 'image_queue', 'text_queue', 'queue_ptr', 'vision_proj.weight', 'vision_proj.bias', 'text_proj.weight', 'text_proj.bias', 'itm_head.weight', 'itm_head.bias', 'vision_proj_m.weight', 'vision_proj_m.bias', 'text_proj_m.weight', 'text_proj_m.bias', 'text_encoder.cls.predictions.bias', 'text_encoder.cls.predictions.transform.dense.weight', 'text_encoder.cls.predictions.transform.dense.bias', 'text_encoder.cls.predictions.transform.LayerNorm.weight', 'text_encoder.cls.predictions.transform.LayerNorm.bias', 'text_encoder.cls.predictions.decoder.weight', 'text_encoder.cls.predictions.decoder.bias', 'text_encoder_m.cls.predictions.bias', 'text_encoder_m.cls.predictions.transform.dense.weight', 'text_encoder_m.cls.predictions.transform.dense.bias', 'text_encoder_m.cls.predictions.transform.LayerNorm.weight', 'text_encoder_m.cls.predictions.transform.LayerNorm.bias', 'text_encoder_m.cls.predictions.decoder.weight', 'text_encoder_m.cls.predictions.decoder.bias'])
+Start training
+Train Epoch: [0]  [   0/2214]  eta: 1:41:12  lr: 0.000010  loss: 1.6055  time: 2.7426  data: 0.6177  max mem: 6246
+Train Epoch: [0]  [  50/2214]  eta: 0:41:42  lr: 0.000010  loss: 1.5314  time: 1.1367  data: 0.0001  max mem: 8789
+Train Epoch: [0]  [ 100/2214]  eta: 0:40:47  lr: 0.000010  loss: 1.5378  time: 1.1647  data: 0.0001  max mem: 8836
+Train Epoch: [0]  [ 150/2214]  eta: 0:39:53  lr: 0.000020  loss: 1.5041  time: 1.1630  data: 0.0001  max mem: 8836
+Train Epoch: [0]  [ 200/2214]  eta: 0:38:55  lr: 0.000020  loss: 1.6672  time: 1.1547  data: 0.0001  max mem: 8836
+Train Epoch: [0]  [ 250/2214]  eta: 0:37:52  lr: 0.000020  loss: 1.4311  time: 1.1445  data: 0.0001  max mem: 8836
+Train Epoch: [0]  [ 300/2214]  eta: 0:36:49  lr: 0.000020  loss: 1.4060  time: 1.1463  data: 0.0001  max mem: 8836
+Train Epoch: [0]  [ 350/2214]  eta: 0:35:48  lr: 0.000020  loss: 1.3077  time: 1.1391  data: 0.0001  max mem: 8836
+Train Epoch: [0]  [ 400/2214]  eta: 0:34:46  lr: 0.000020  loss: 1.3864  time: 1.1355  data: 0.0001  max mem: 8836
+Train Epoch: [0]  [ 450/2214]  eta: 0:33:46  lr: 0.000020  loss: 1.2230  time: 1.1365  data: 0.0001  max mem: 8836
+Train Epoch: [0]  [ 500/2214]  eta: 0:32:46  lr: 0.000020  loss: 0.7360  time: 1.1339  data: 0.0001  max mem: 8836
