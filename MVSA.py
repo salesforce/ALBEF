@@ -17,7 +17,7 @@ from torch.utils.data import DataLoader
 import torch.backends.cudnn as cudnn
 import torch.distributed as dist
 
-from models.model_ac import ALBEF
+from models.model_mvsa import ALBEF
 from models.vit import interpolate_pos_embed
 from models.tokenization_bert import BertTokenizer
 
@@ -232,8 +232,8 @@ def main(args, config):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config', default='./configs/AC.yaml')
-    parser.add_argument('--output_dir', default='output/AC')  
+    parser.add_argument('--config', default='./configs/MVSA.yaml')
+    parser.add_argument('--output_dir', default='output/MVSA')  
     parser.add_argument('--checkpoint', default='save/pretrained.pth')   
     parser.add_argument('--text_encoder', default='bert-base-uncased')
     parser.add_argument('--evaluate', action='store_true')    

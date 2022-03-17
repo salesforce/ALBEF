@@ -1,4 +1,6 @@
 import argparse
+from cgitb import text
+from ctypes import util
 import os
 import ruamel_yaml as yaml
 import numpy as np
@@ -17,7 +19,7 @@ from torch.utils.data import DataLoader
 import torch.backends.cudnn as cudnn
 import torch.distributed as dist
 
-from models.model_yelp import ALBEF
+from models.model_demo import ALBEF
 from models.vit import interpolate_pos_embed
 from models.tokenization_bert import BertTokenizer
 
@@ -42,17 +44,34 @@ def train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device,
     step_size = 100
     warmup_iterations = warmup_steps*step_size  
  
-    for i,(images, text, label) in enumerate(metric_logger.log_every(data_loader, print_freq, header)):
+    for i,(images, texts, label) in enumerate(metric_logger.log_every(data_loader, print_freq, header)):
         images, label = images.to(device,non_blocking=True), label.to(device,non_blocking=True)
+        text_inputs_list = torch.zeros(4, 10, 100).to(device, non_blocking=True)
+        text_inputs_list = []
+        bs = label.size(0)
+        for i in range(bs):
+            l = []
+            text_split = utils.split(texts[i])
+            num_sent = len(text_split)
+            for j in range(num_sent):
+                sent_tokens = tokenizer(
+                    text_split[j],
+                    return_tensors="pt", 
+                    truncation=True,
+                    max_length=100,
+                    padding='max_length'
+                ).to(device)
+                print(type(sent_tokens))
+                l.append(sent_tokens)
+            text_inputs_list.append(l)
         
-        text_inputs = tokenizer(text, padding='longest', return_tensors="pt", truncation=True).to(device) 
         
         if epoch>0 or not config['warm_up']:
             alpha = config['alpha']
         else:
             alpha = config['alpha']*min(1,i/len(data_loader))
 
-        loss = model(images, text_inputs, label=label, train=True, alpha=alpha)    
+        loss = model(images, text_inputs_list, label=label, train=True, alpha=alpha)    
         
         optimizer.zero_grad()
         loss.backward()
@@ -113,7 +132,7 @@ def main(args, config):
 
     #### Dataset #### 
     print("Creating dataset")
-    datasets = create_dataset('Yelp', config) 
+    datasets = create_dataset('demo', config) 
     
     if args.distributed:
         num_tasks = utils.get_world_size()
@@ -232,8 +251,8 @@ def main(args, config):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config', default='./configs/Yelp.yaml')
-    parser.add_argument('--output_dir', default='output/Yelp')  
+    parser.add_argument('--config', default='./configs/Demo.yaml')
+    parser.add_argument('--output_dir', default='output/Demo')  
     parser.add_argument('--checkpoint', default='save/pretrained.pth')   
     parser.add_argument('--text_encoder', default='bert-base-uncased')
     parser.add_argument('--evaluate', action='store_true')    

@@ -558,7 +558,7 @@ class BertEncoder(nn.Module):
         elif mode=='multi_modal':
             start_layer = 0
             output_layer = self.config.num_hidden_layers        
-        
+        # TODO 
         for i in range(start_layer, output_layer):
             layer_module = self.layer[i]
             if output_hidden_states:
