@@ -36,7 +36,6 @@ text2 = \
 
 # text = text2
 texts = pre_ac(text)
-print(texts)
 
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 bert = BertModel.from_pretrained(
@@ -56,17 +55,76 @@ cls_head = nn.Sequential(
             )
         )
 
-n = len(texts)
-a = torch.zeros(bert.config.hidden_size)
-for text in texts:
-    tokens = tokenizer(text, truncation=True, return_tensors="pt")
-    output = bert(
-        tokens.input_ids,
-        attention_mask = tokens.attention_mask, 
-        return_dict = True
-    )
-    a = a + output.last_hidden_state[:, 0, :]
-a = a / n
-prediction = cls_head(a)
+
+@torch.no_grad()
+def split_words(input_ids):
+    '''
+    input_ids: bs * num_max_words 
+    '''
+    bs = input_ids.size(0)
+    input_ids = input_ids.clone().detach()
+    ret = []
+    for b_id in range(bs):
+        # max_num_words = 0
+        sent = input_ids[b_id][1:]
+        if sent[-1].item() == 0:
+            sent = sent[:(sent==0).nonzero().min().item()]
+        idx = (sent == 102).nonzero().squeeze(1)
+        idx = idx + 1
+        for i in range(1, len(idx)):
+            idx[i] = idx[i] - idx[i - 1]
+        idx = idx.tolist()
+        sents = list(sent.split(idx))
+        for i in range(len(sents)):
+            sents[i] = torch.tensor([101] + sents[i].tolist()).to(input_ids.device)
+            # max_num_words = max(max_num_words, len(sents[i]))
+
+        # for i in range(len(sents)):
+        #     sents[i] = sents[i] + [0] * (max_num_words - len(sents[i]))
+        ret.append(sents)
+    return ret 
+
+def get_feat(inputs):
+    bs = len(inputs)
+    a = torch.zeros(bert.config.hidden_size)
+    for i in range(bs):
+        sent_num = len(inputs[i])
+        for sent in inputs[i]:
+            att_mask = torch.ones_like(sent).to(sent.device)
+            output = bert(
+                sent.unsqueeze(0),
+                attention_mask=att_mask.unsqueeze(0),
+                return_dict=True,
+                # mode='text'
+            )
+        a = a + output.last_hidden_state[:, 0, :]
+    a = a / sent_num
+    return a
+
+# n = len(texts)
+# a = torch.zeros(bert.config.hidden_size)
+# for text in texts:
+#     tokens = tokenizer(text, truncation=True, return_tensors="pt")
+#     output = bert(
+#         tokens.input_ids,
+#         attention_mask = tokens.attention_mask, 
+#         return_dict = True
+#     )
+#     a = a + output.last_hidden_state[:, 0, :]
+# a = a / n
+# prediction = cls_head(a)
+# _, pred_class = prediction.max(1)
+batch = ['Hello world.[SEP]Hello python and pytorch.', 'Are you happy?']
+tokens = tokenizer(
+    batch, 
+    padding=True, 
+    return_tensors='pt'
+)
+inputs = split_words(tokens.input_ids)
+feat = get_feat(inputs)
+prediction = cls_head(feat)
 _, pred_class = prediction.max(1)
-print(pred_class, prediction)
+print(prediction, pred_class)
+# print(tokens.input_ids)
+# print(split_words(tokens.input_ids))
+# 101 [CLS] 102 [SEP]

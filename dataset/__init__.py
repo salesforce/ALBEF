@@ -10,7 +10,6 @@ from dataset.vqa_dataset import vqa_dataset
 from dataset.grounding_dataset import grounding_dataset
 from dataset.mvsa_dataset import mvsa_dataset
 from dataset.yelp_dataset import yelp_dataset
-from dataset.demo_dataset import demo_dataset
 
 from dataset.randaugment import RandomAugment
 import os
@@ -80,7 +79,7 @@ def create_dataset(dataset, config):
         train_dataset = grounding_dataset(config['train_file'], train_transform, config['image_root'], mode='train')       
         test_dataset = grounding_dataset(config['test_file'], test_transform, config['image_root'], mode='test')             
         return train_dataset, test_dataset    
-    elif dataset=='AC' or dataset == 'Yelp' or dataset == 'demo':
+    elif dataset=='AC' or dataset == 'Yelp':
         pretrain_transform = transforms.Compose([                        
             transforms.Resize((config['image_res'],config['image_res']),
                 interpolation=Image.BICUBIC),
@@ -128,23 +127,6 @@ def create_dataset(dataset, config):
                 split='valid'
             )  
             test_dataset = yelp_dataset(
-                config['data_root'],
-                test_transform, 
-                split='test'
-            )                
-            return train_dataset, val_dataset, test_dataset     
-        elif dataset == 'demo':
-            train_dataset = demo_dataset(
-                config['data_root'],
-                train_transform, 
-                split='train'
-            )  
-            val_dataset = demo_dataset(
-                config['data_root'],
-                test_transform, 
-                split='valid'
-            )  
-            test_dataset = demo_dataset(
                 config['data_root'],
                 test_transform, 
                 split='test'

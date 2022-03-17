@@ -23,9 +23,10 @@ def pre_ac(text):
     text = re.sub(at_pattern, '', text)
     not_ascii_pattern = '[^a-zA-Z0-9|]'
     text = re.sub(not_ascii_pattern, ' ', text)
+    text = text.replace('|||', '[SEP]')
     text = re.sub(' +', ' ', text)
     text = text.strip()
-    return text
+    return text + '[SEP]'
 
 
 

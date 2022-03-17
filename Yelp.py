@@ -45,7 +45,7 @@ def train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device,
     for i,(images, text, label) in enumerate(metric_logger.log_every(data_loader, print_freq, header)):
         images, label = images.to(device,non_blocking=True), label.to(device,non_blocking=True)
         
-        text_inputs = tokenizer(text, padding='longest', return_tensors="pt", truncation=True).to(device) 
+        text_inputs = tokenizer(text, padding='longest', return_tensors="pt").to(device) 
         
         if epoch>0 or not config['warm_up']:
             alpha = config['alpha']
@@ -84,7 +84,7 @@ def evaluate(model, data_loader, tokenizer, device, config):
         
         images, targets = images.to(device,non_blocking=True), targets.to(device,non_blocking=True)   
         
-        text_inputs = tokenizer(text, padding='longest', return_tensors="pt", truncation=True).to(device)  
+        text_inputs = tokenizer(text, padding='longest', return_tensors="pt").to(device)  
 
         prediction = model(images, text_inputs, label=targets, train=False)  
  
