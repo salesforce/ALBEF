@@ -45,14 +45,15 @@ def train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device,
     for i,(images, text, label) in enumerate(metric_logger.log_every(data_loader, print_freq, header)):
         images, label = images.to(device,non_blocking=True), label.to(device,non_blocking=True)
         
-        text_inputs = tokenizer(text, padding='longest', return_tensors="pt").to(device) 
+        text_inputs = tokenizer(text, padding='longest', return_tensors="np")
+        text_inputs = utils.split_words(text_inputs.input_ids, device)
         
         if epoch>0 or not config['warm_up']:
             alpha = config['alpha']
         else:
             alpha = config['alpha']*min(1,i/len(data_loader))
 
-        loss = model(images, text_inputs, label=label, train=True, alpha=alpha)    
+        loss = model(images, text_inputs, device=device, label=label, train=True, alpha=alpha)    
         
         optimizer.zero_grad()
         loss.backward()
@@ -84,9 +85,10 @@ def evaluate(model, data_loader, tokenizer, device, config):
         
         images, targets = images.to(device,non_blocking=True), targets.to(device,non_blocking=True)   
         
-        text_inputs = tokenizer(text, padding='longest', return_tensors="pt").to(device)  
+        text_inputs = tokenizer(text, padding='longest', return_tensors="pt")  
+        text_inputs = utils.split_words(text_inputs.input_ids, device)
 
-        prediction = model(images, text_inputs, label=targets, train=False)  
+        prediction = model(images, text_inputs, device=device, label=targets, train=False)  
  
         _, pred_class = prediction.max(1)
         accuracy = (targets==pred_class).sum() / targets.size(0)
@@ -124,7 +126,7 @@ def main(args, config):
 
     train_loader, val_loader, test_loader = create_loader(datasets,samplers,
                                                           batch_size=[config['batch_size_train']]+[config['batch_size_test']]*2,
-                                                          num_workers=[4,4,4],is_trains=[True,False,False], 
+                                                          num_workers=[0,0,0],is_trains=[True,False,False], 
                                                           collate_fns=[None,None,None])
 
     tokenizer = BertTokenizer.from_pretrained(args.text_encoder)

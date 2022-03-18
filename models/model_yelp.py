@@ -8,6 +8,8 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 
+import numpy as np
+
 class ALBEF(nn.Module):
     def __init__(self,                 
                  text_encoder = None,
@@ -63,43 +65,13 @@ class ALBEF(nn.Module):
             self.copy_params()        
             self.momentum = 0.995
          
-    @torch.no_grad()
-    def split_words(self, input_ids):
-        '''
-        input_ids: bs * num_max_words 
-        '''
-        bs = input_ids.size(0)
-        input_ids = input_ids.clone().detach()
-        ret = []
-        for b_id in range(bs):
-            max_num_words = 0
-            sent = input_ids[b_id][1:]
-            if sent[-1].item() == 0:
-                sent = sent[:(sent==0).nonzero().min().item()]
-            idx = (sent == 102).nonzero().squeeze(1)
-            idx = idx + 1
-            idx_bak = idx.clone().detach()
-            for i in range(1, len(idx)):
-                idx[i] = idx_bak[i] - idx_bak[i - 1]
-            idx = idx.tolist()
-            # print(sent, idx, idx_bak)
-            sents = list(sent.split(idx))
-            for i in range(len(sents)):
-                sents[i] = [101] + sents[i].tolist()
-                max_num_words = max(max_num_words, len(sents[i]))
 
-            for i in range(len(sents)):
-                sents[i] = sents[i] + [0] * (max_num_words - len(sents[i]))
-            ret.append(torch.tensor(sents).to(input_ids.device))
-        return ret
-
-    def get_feat(self, inputs):
+    def get_feat(self, inputs, device):
         bs = len(inputs)
-        b = torch.zeros(bs, self.text_encoder.config.hidden_size).to(inputs[0][0].device)
+        b = []
         for i in range(bs):
-            # sent_num = len(inputs[i])
-            sents = inputs[i]
-            att_mask = torch.ones_like(sents).to(sents.device)
+            sents = torch.tensor(inputs[i], dtype=torch.long).to(device)
+            att_mask = torch.ones(sents.shape, dtype=torch.long).to(device)
             output = self.text_encoder(
                 sents,
                 attention_mask=att_mask,
@@ -107,16 +79,17 @@ class ALBEF(nn.Module):
                 mode='text'
             )
             a = output.last_hidden_state[:, 0, :].mean(dim=0)
-        b[i] = a
-        return b
+            b.append(a)
+        b = torch.stack(b)
+        return b 
             
-    def forward(self, image, text, label, alpha=0, train=True):
+    def forward(self, image, text, label, device, alpha=0, train=True):
         
         image_embeds = self.visual_encoder(image) 
         image_atts = torch.ones(image_embeds.size()[:-1],dtype=torch.long).to(image.device)        
         
         if train:
-            output = self.get_feat(self.split_words(text.input_ids))
+            output = self.get_feat(text, device)
             # output = self.text_encoder(text.input_ids, 
             #                            attention_mask = text.attention_mask, 
             #                            encoder_hidden_states = image_embeds,
@@ -145,7 +118,7 @@ class ALBEF(nn.Module):
             return loss 
             
         else:
-            output = self.get_feat(self.split_words(text.input_ids))
+            output = self.get_feat(text, device)
             # output = self.text_encoder(text.input_ids, 
             #                            attention_mask = text.attention_mask, 
             #                            encoder_hidden_states = image_embeds,

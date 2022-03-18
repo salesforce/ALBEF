@@ -260,3 +260,26 @@ def init_distributed_mode(args):
 
 def split(text):
     return text.split('|||')
+
+def split_words(input_ids, device):
+    '''
+    input_ids: bs * num_max_words 
+    '''
+    bs = input_ids.shape[0]
+    ret = []
+    for b_id in range(bs):
+        max_num_words = 0
+        sent = input_ids[b_id][1:]
+        if sent[-1] == 0:
+            sent = sent[:(sent==0).nonzero()[0].min()]
+        idx = (sent == 102).nonzero()[0] + 1
+        sents = np.split(sent, idx[:-1])
+        for i in range(len(sents)):
+            sents[i] = np.append(101, sents[i])
+            max_num_words = max(max_num_words, sents[i].size)
+
+        for i in range(len(sents)):
+            if sents[i].size != max_num_words:
+                sents[i] = np.append(sents[i], [0] * (max_num_words - sents[i].size))
+        ret.append(torch.tensor(np.array(sents), dtype=torch.long).to(device))
+    return ret
