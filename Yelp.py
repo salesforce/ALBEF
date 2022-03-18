@@ -38,7 +38,7 @@ def train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device,
     metric_logger.add_meter('loss', utils.SmoothedValue(window_size=50, fmt='{value:.4f}'))
 
     header = 'Train Epoch: [{}]'.format(epoch)
-    print_freq = 50   
+    print_freq = 10   
     step_size = 100
     warmup_iterations = warmup_steps*step_size  
  
@@ -156,7 +156,7 @@ def main(args, config):
                 
         msg = model.load_state_dict(state_dict,strict=False)
         print('load checkpoint from %s'%args.checkpoint)
-        print(msg)
+        # print(msg)
 
     model = model.to(device)   
     

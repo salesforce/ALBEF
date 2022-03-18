@@ -276,6 +276,9 @@ def split_words(input_ids, device):
         sents = np.split(sent, idx[:-1])
         for i in range(len(sents)):
             sents[i] = np.append(101, sents[i])
+            if sents[i].size > 500:
+                sents[i] = sents[i][:499]
+                sents[i] = np.append(sents[i], 102)
             max_num_words = max(max_num_words, sents[i].size)
 
         for i in range(len(sents)):

@@ -5,6 +5,7 @@ from PIL import Image
 from torch.utils.data import Dataset
 from dataset.utils import pre_ac
 import jsonlines
+import torch
 
 def _load_annotations(annotations_jsonpath):
     entries = []
@@ -40,6 +41,7 @@ class yelp_dataset(Dataset):
     def __getitem__(self, index):    
         entry = self._entry[index]
         label = int(entry['label']) - 1
+        im_s = []
         try:
             photos = entry['Photos']
             for im in photos:
@@ -49,12 +51,14 @@ class yelp_dataset(Dataset):
                     im_id + '.jpg'
                 )
                 if os.path.exists(image_path):
-                    break
-                
-            image = Image.open(image_path).convert('RGB')   
+                    image = Image.open(image_path).convert('RGB')   
+                    image = self.transform(image)
+                    im_s.append(image)
         except KeyError:
             image = Image.new('RGB', (256, 256), (255, 255, 255))
-        image = self.transform(image)          
-            
+            image = self.transform(image)
+            im_s.append(image)
         text = pre_ac(self._entry[index]['text'])
-        return image, text, label
+        # im_s = torch.stack(im_s)
+        # print(im_s.size())
+        return im_s[0], text, label

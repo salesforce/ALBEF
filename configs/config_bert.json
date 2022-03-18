@@ -11,11 +11,11 @@
   "layer_norm_eps": 1e-12,
   "max_position_embeddings": 512,
   "model_type": "bert",
-  "num_attention_heads": 12,
-  "num_hidden_layers": 12,
+  "num_attention_heads": 6,
+  "num_hidden_layers": 6,
   "pad_token_id": 0,
   "type_vocab_size": 2,
   "vocab_size": 30522,
-  "fusion_layer": 6,
+  "fusion_layer": 4,
   "encoder_width": 768
 }
