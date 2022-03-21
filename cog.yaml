@@ -1,0 +1,21 @@
+build:
+  gpu: true
+  cuda: "11.1"
+  python_version: "3.8"
+  system_packages:
+    - "libgl1-mesa-glx"
+    - "libglib2.0-0"
+  python_packages:
+    - "ipython==7.30.1"
+    - "torchvision==0.11.1"
+    - "torch==1.10.0"
+    - "timm==0.4.12"
+    - "transformers==4.8.1"
+    - "Pillow==8.3.2"
+    - "numpy==1.21.1"
+    - "opencv-python==4.5.5.62"
+    - "scipy==1.8.0"
+    - "scikit_image==0.19.2"
+    - "matplotlib==3.4.3"
+
+predict: "predict.py:Predictor"

@@ -26,6 +26,8 @@ and visual grounding on RefCOCO+. Pre-trained and finetuned checkpoints are rele
 We provide code in visualize.ipynb to visualize the important areas in an image for each word in a text. 
 Here is an example visualization using the visual grounding checkpoint.
 
+Try the Replicate demo here [![Replicate](https://replicate.com/salesforce/albef/badge)](https://replicate.com/salesforce/albef).
+
 <img src="examples/visualization.png" width="700">
 
 ### Pre-training on custom datasets:
