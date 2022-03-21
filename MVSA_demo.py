@@ -17,7 +17,7 @@ from torch.utils.data import DataLoader
 import torch.backends.cudnn as cudnn
 import torch.distributed as dist
 
-from models.model_yelp import ALBEF
+from models.model_mvsa_demo import ALBEF
 from models.vit import interpolate_pos_embed
 from models.tokenization_bert import BertTokenizer
 
@@ -94,7 +94,7 @@ def evaluate(model, data_loader, tokenizer, device, config):
         
         images, targets = images.to(device,non_blocking=True), targets.to(device,non_blocking=True)   
         
-        text_inputs = tokenizer(text, padding='longest', return_tensors="np")  
+        text_inputs = tokenizer(text, padding='longest', return_tensors="np")
         text_inputs = utils.split_words(text_inputs.input_ids, device)
 
         prediction, loss = model(images, text_inputs, device=device, label=targets, train=False)  
@@ -128,7 +128,7 @@ def main(args, config):
 
     #### Dataset #### 
     print("Creating dataset")
-    datasets = create_dataset('Yelp', config) 
+    datasets = create_dataset('MVSA_demo', config) 
     
     if args.distributed:
         num_tasks = utils.get_world_size()
@@ -247,8 +247,8 @@ def main(args, config):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config', default='./configs/Yelp.yaml')
-    parser.add_argument('--output_dir', default='output/Yelp')  
+    parser.add_argument('--config', default='./configs/MVSA_demo.yaml')
+    parser.add_argument('--output_dir', default='output/MVSA')  
     parser.add_argument('--checkpoint', default='save/pretrained.pth')   
     parser.add_argument('--text_encoder', default='bert-base-uncased')
     parser.add_argument('--evaluate', action='store_true')    

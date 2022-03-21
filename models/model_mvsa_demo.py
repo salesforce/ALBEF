@@ -102,7 +102,17 @@ class ALBEF(nn.Module):
         image_embeds = self.visual_encoder(image) 
         image_atts = torch.ones(image_embeds.size()[:-1],dtype=torch.long).to(image.device)        
         if train:
+            # hirachical
+
             output_t = self.get_feat(text, device, self.text_encoder)
+
+            # albef
+            # output_t = self.text_encoder(text.input_ids, 
+            #                            attention_mask = text.attention_mask, 
+            #                            encoder_hidden_states = image_embeds,
+            #                            encoder_attention_mask = image_atts,        
+            #                            return_dict = True
+            #                           )         
             output_fuse = self.text_encoder(
                 encoder_embeds = output_t,
                 encoder_hidden_states = image_embeds,
@@ -110,6 +120,7 @@ class ALBEF(nn.Module):
                 mode='fusion',
                 return_dict = True
             )
+            prediction = self.cls_head(output_fuse.last_hidden_state.mean(dim=1))
             # output = self.text_encoder(text.input_ids, 
             #                            attention_mask = text.attention_mask, 
             #                            encoder_hidden_states = image_embeds,
@@ -117,7 +128,6 @@ class ALBEF(nn.Module):
             #                            return_dict = True
             #                           )         
             # prediction = self.cls_head(output.last_hidden_state.mean(dim=1))
-            prediction = self.cls_head(output_fuse.last_hidden_state.mean(dim=1))
             # prediction = self.cls_head(output.last_hidden_state[:,0,:])                
             if self.distill:                
                 with torch.no_grad():
@@ -131,7 +141,7 @@ class ALBEF(nn.Module):
                     #                           )           
                     output_t_m = self.get_feat(text, device, self.text_encoder_m)
                     output_fuse_m = self.text_encoder_m(
-                        encoder_embeds = output_t_m,
+                        encoder_embeds = output_t_m.last_hidden_state,
                         encoder_hidden_states = image_embeds_m,
                         encoder_attention_mask = image_atts,        
                         mode='fusion',
@@ -147,6 +157,12 @@ class ALBEF(nn.Module):
             
         else:
             output_t = self.get_feat(text, device, self.text_encoder)
+            # output_t = self.text_encoder(text.input_ids, 
+            #                            attention_mask = text.attention_mask, 
+            #                            encoder_hidden_states = image_embeds,
+            #                            encoder_attention_mask = image_atts,        
+            #                            return_dict = True
+            #                           )         
             output_fuse = self.text_encoder(
                 encoder_embeds = output_t,
                 encoder_hidden_states = image_embeds,

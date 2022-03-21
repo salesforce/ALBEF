@@ -3,7 +3,7 @@ import json
 import random
 from PIL import Image
 from torch.utils.data import Dataset
-from dataset.utils import pre_ac
+from dataset.utils import pre_ac, pre_mvsa
 import jsonlines
 
 def _load_annotations(annotations_jsonpath):
@@ -45,5 +45,5 @@ class mvsa_dataset(Dataset):
         image = Image.open(image_path).convert('RGB')   
         image = self.transform(image)          
             
-        text = pre_ac(self._entry[index]['text'])            
+        text = pre_mvsa(self._entry[index]['text'])            
         return image, text, label

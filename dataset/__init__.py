@@ -79,16 +79,20 @@ def create_dataset(dataset, config):
         train_dataset = grounding_dataset(config['train_file'], train_transform, config['image_root'], mode='train')       
         test_dataset = grounding_dataset(config['test_file'], test_transform, config['image_root'], mode='test')             
         return train_dataset, test_dataset    
-    elif dataset=='AC' or dataset == 'Yelp':
+    elif dataset=='AC' or dataset == 'Yelp' or dataset == 'MVSA_demo':
         pretrain_transform = transforms.Compose([                        
-            transforms.Resize((config['image_res'],config['image_res']),
-                interpolation=Image.BICUBIC),
+            transforms.RandomResizedCrop(config['image_res'],scale=(0.5, 1.0), interpolation=Image.BICUBIC),
+            transforms.RandomHorizontalFlip(),
+            RandomAugment(2,7,isPIL=True,augs=['Identity','AutoContrast','Equalize','Brightness','Sharpness',
+                                              'ShearX', 'ShearY', 'TranslateX', 'TranslateY', 'Rotate']),     
             transforms.ToTensor(),
             normalize,
         ])    
         train_transform = transforms.Compose([                        
-            transforms.Resize((config['image_res'],config['image_res']),
-                interpolation=Image.BICUBIC),
+            transforms.RandomResizedCrop(config['image_res'],scale=(0.5, 1.0), interpolation=Image.BICUBIC),
+            transforms.RandomHorizontalFlip(),
+            RandomAugment(2,7,isPIL=True,augs=['Identity','AutoContrast','Equalize','Brightness','Sharpness',
+                                              'ShearX', 'ShearY', 'TranslateX', 'TranslateY', 'Rotate']),     
             transforms.ToTensor(),
             normalize,
         ])  
@@ -98,7 +102,7 @@ def create_dataset(dataset, config):
             transforms.ToTensor(),
             normalize,
         ])   
-        if dataset == 'MVSA':
+        if dataset == 'MVSA_demo':
             train_dataset = mvsa_dataset(
                 config['data_root'],
                 train_transform, 
