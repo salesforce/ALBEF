@@ -286,3 +286,21 @@ def split_words(input_ids, device):
                 sents[i] = np.append(sents[i], [0] * (max_num_words - sents[i].size))
         ret.append(torch.tensor(np.array(sents), dtype=torch.long).to(device))
     return ret
+
+
+def multi_image_collact_fn(batch):
+    bs = len(batch)
+    max_num_img = 0
+    for img, text, label in batch:
+        max_num_img = max(max_num_img, img.size(0))
+    ret = torch.zeros(
+        bs, max_num_img,
+        3, 384, 384
+    )
+    for i in range(bs):
+        img, text, label = batch[i]
+        ret[i, :img.size(0)] = img
+    
+    _, text, label = zip(*batch)
+    label = torch.tensor(label)
+    return ret, text, label

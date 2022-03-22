@@ -70,7 +70,7 @@ class ALBEF(nn.Module):
             self.momentum = 0.995
          
 
-    def get_feat(self, inputs, device, encoder):
+    def get_t_feat(self, inputs, device):
         bs = len(inputs)
         b = []
         num_max_sent = 0
@@ -78,7 +78,7 @@ class ALBEF(nn.Module):
             sents = torch.tensor(inputs[i], dtype=torch.long).to(device)[:20]
             # print(sents.size())
             att_mask = torch.ones(sents.shape, dtype=torch.long).to(device)
-            output = encoder(
+            output = self.text_encoder(
                 sents,
                 attention_mask=att_mask,
                 return_dict=True,
@@ -89,62 +89,72 @@ class ALBEF(nn.Module):
             # doc_feat = sent_feat.mean(dim=0)
             b.append(sent_feat)
             num_max_sent = max(num_max_sent, sent_feat.size(0))
-        ret = torch.zeros(bs, num_max_sent, encoder.config.hidden_size, dtype=torch.float).to(device)
+        ret = torch.zeros(
+            bs, 
+            num_max_sent, 
+            self.text_encoder.config.hidden_size, 
+            dtype=torch.float
+        ).to(device)
+
         for i in range(bs):
             ret[i][:b[i].size(0)] = b[i]
         return ret
-            
+
+    def get_v_feat(self, inputs, device):
+        bs = inputs.size(0)
+        num_max_img = 0
+        b = []
+        for i in range(bs):
+            img = inputs[i]
+            output = self.visual_encoder(img)
+            img_feat = output[:,0,:]
+            b.append(img_feat)
+            num_max_img = max(num_max_img, img_feat.size(0))
+
+        ret = torch.zeros(
+            bs, 
+            num_max_img,
+            768,
+            dtype=torch.float
+        ).to(device)
+
+        for i in range(bs):
+            ret[i][:b[i].size(0)] = b[i]
+        return ret
+
     def forward(self, image, text, label, device, alpha=0, train=True):
-        image_embeds = self.visual_encoder(image) 
-        image_atts = torch.ones(image_embeds.size()[:-1],dtype=torch.long).to(image.device)        
+        output_v = self.get_v_feat(image, device)
+        output_t = self.get_t_feat(text, device)
+        output_fuse = self.text_encoder(
+            encoder_embeds = output_t,
+            encoder_hidden_states = output_v,
+            mode='fusion',
+            return_dict = True
+        )
+        logit = self.cls_head(output_fuse.last_hidden_state[:,0,:])
         if train:
-            output_t = self.get_feat(text, device, self.text_encoder)
-            output_fuse = self.text_encoder(
-                encoder_embeds = output_t,
-                encoder_hidden_states = image_embeds,
-                encoder_attention_mask = image_atts,        
-                mode='fusion',
-                return_dict = True
-            )
-            prediction = self.cls_head(output_fuse.last_hidden_state[:,0,:])
-            # prediction = self.cls_head(output_t.mean(dim=1))                
             if self.distill:                
                 with torch.no_grad():
                     self._momentum_update()
-                    image_embeds_m = self.visual_encoder_m(image) 
-                    output_t_m = self.get_feat(text, device, self.text_encoder_m)
+                    output_t_m = self.get_t_feat(text, device)
+                    output_v_m = self.get_v_feat(image, device)
                     output_fuse_m = self.text_encoder_m(
                         encoder_embeds = output_t_m,
-                        encoder_hidden_states = image_embeds_m,
-                        encoder_attention_mask = image_atts,        
+                        encoder_hidden_states = output_v_m,
                         mode='fusion',
                         return_dict = True
                     )
                     prediction_m = self.cls_head_m(output_fuse_m.last_hidden_state[:,0,:])
-                    # prediction_m = self.cls_head_m(output_fuse_m.last_hidden_state.mean(dim=1))   
-                    # prediction_m = self.cls_head_m(output_t_m.mean(dim=1))   
 
-
-                loss = (1-alpha)*F.cross_entropy(prediction, label) - alpha*torch.sum(
-                    F.log_softmax(prediction, dim=1)*F.softmax(prediction_m, dim=1),dim=1).mean()
+                loss = (1-alpha)*F.cross_entropy(logit, label) - alpha*torch.sum(
+                    F.log_softmax(logit, dim=1)*F.softmax(prediction_m, dim=1),dim=1).mean()
             else:
-                loss = F.cross_entropy(prediction, label)                
-            return prediction, loss 
+                loss = F.cross_entropy(logit, label)                
+            return logit, loss 
             
         else:
-            output_t = self.get_feat(text, device, self.text_encoder)
-            output_fuse = self.text_encoder(
-                encoder_embeds = output_t,
-                encoder_hidden_states = image_embeds,
-                encoder_attention_mask = image_atts,        
-                mode='fusion',
-                return_dict = True
-            )
-            prediction = self.cls_head(output_fuse.last_hidden_state[:,0,:])
-            # prediction = self.cls_head(output_fuse.last_hidden_state.mean(dim=1))
-            # prediction = self.cls_head(output_t.mean(dim=1))
-            loss = F.cross_entropy(prediction, label)                
-            return prediction, loss
+            loss = F.cross_entropy(logit, label)                
+            return logit, loss
  
 
 

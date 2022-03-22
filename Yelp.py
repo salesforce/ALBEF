@@ -25,6 +25,7 @@ import utils
 from dataset import create_dataset, create_sampler, create_loader
 from scheduler import create_scheduler
 from optim import create_optimizer
+from utils import multi_image_collact_fn
 import warnings
 warnings.filterwarnings("ignore", category=UserWarning) 
 
@@ -55,7 +56,6 @@ def train(
  
     for i,(images, text, label) in enumerate(metric_logger.log_every(data_loader, print_freq, header)):
         images, label = images.to(device,non_blocking=True), label.to(device,non_blocking=True)
-        
         text_inputs = tokenizer(text, padding='longest', return_tensors="np")
         text_inputs = utils.split_words(text_inputs.input_ids, device)
         
@@ -98,9 +98,6 @@ def evaluate(model, data_loader, tokenizer, device, config):
 
     header = 'Evaluation:'
     print_freq = 50
-    cnt_acc = 0.0
-    cnt_loss = 0.0
-    cnt_n = 0
 
     for images, text, targets in metric_logger.log_every(data_loader, print_freq, header):
         
@@ -115,14 +112,10 @@ def evaluate(model, data_loader, tokenizer, device, config):
         accuracy = (targets==pred_class).sum() / targets.size(0)
 
         metric_logger.meters['acc'].update(accuracy.item(), n=images.size(0))
-        cnt_acc += accuracy * targets.size(0)
-        cnt_loss += loss * targets.size(0)
-        cnt_n += targets.size(0)
 
     # gather the stats from all processes
     metric_logger.synchronize_between_processes()
     print("Averaged stats:", metric_logger.global_avg())   
-    print(' ---  acc:{}   loss:{}    --- '.format(cnt_acc / cnt_n, cnt_loss / cnt_n)) 
     return {k: "{:.4f}".format(meter.global_avg) for k, meter in metric_logger.meters.items()}
     
     
@@ -149,10 +142,12 @@ def main(args, config):
     else:
         samplers = [None, None, None]
 
-    train_loader, val_loader, test_loader = create_loader(datasets,samplers,
-                                                          batch_size=[config['batch_size_train']]+[config['batch_size_test']]*2,
-                                                          num_workers=[0,0,0],is_trains=[True,False,False], 
-                                                          collate_fns=[None,None,None])
+    train_loader, val_loader, test_loader = create_loader(
+        datasets,samplers,
+        batch_size=[config['batch_size_train']] + [config['batch_size_test']] * 2,
+        num_workers=[0] * 3,
+        is_trains=[True,False,False], 
+        collate_fns=[None] * 3)
 
     tokenizer = BertTokenizer.from_pretrained(args.text_encoder)
 
