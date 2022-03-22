@@ -6,7 +6,7 @@ test_file: 'test.json'
 
 
 image_res: 384
-batch_size_train: 32
+batch_size_train: 8
 batch_size_test: 64 
 
 alpha: 0.4
@@ -17,18 +17,19 @@ bert_config: 'configs/config_bert.json'
 
 optimizer: {
   opt: adamW, 
-  lr: 1e-5, 
-  weight_decay: 0.03
+  lr: 1e-4, 
+  weight_decay: 0.01
 }
 
 schedular: {
-  sched: cosine, 
-  lr: 1e-5, 
-  epochs: 20, 
-  min_lr: 1e-6, 
-  decay_rate: 1, 
+  sched: step, 
+  lr: 1e-4, 
+  epochs: 20,
+  min_lr: 1e-5, 
+  decay_rate: 0.5, 
+  decay_epochs: 1,
   warmup_lr: 1e-5, 
-  warmup_epochs: 1, 
+  warmup_epochs: 0, 
   cooldown_epochs: 0
 }
 

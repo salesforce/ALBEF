@@ -29,7 +29,17 @@ import warnings
 warnings.filterwarnings("ignore", category=UserWarning) 
 
 
-def train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device, scheduler, config):
+def train(
+    model, 
+    data_loader, 
+    optimizer, 
+    tokenizer, 
+    epoch, 
+    warmup_steps, 
+    device, 
+    scheduler, 
+    config, 
+    accumulation_steps):
     # train
     model.train()  
     
@@ -55,11 +65,13 @@ def train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device,
             alpha = config['alpha']*min(1,i/len(data_loader))
 
         prediction, loss = model(images, text_inputs, device=device, label=label, train=True, alpha=alpha)    
-        
-
+        # loss = loss / accumulation_steps 
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()    
+        # if (i + 1) % accumulation_steps == 0:
+            # optimizer.step()
+            # optimizer.zero_grad()  
 
         _, pred_class = prediction.max(1)
         accuracy = (label==pred_class).sum() / label.size(0)
@@ -107,10 +119,10 @@ def evaluate(model, data_loader, tokenizer, device, config):
         cnt_loss += loss * targets.size(0)
         cnt_n += targets.size(0)
 
-    print(' ---  acc:{}   loss:{}    --- '.format(cnt_acc / cnt_n, cnt_loss / cnt_n)) 
     # gather the stats from all processes
     metric_logger.synchronize_between_processes()
     print("Averaged stats:", metric_logger.global_avg())   
+    print(' ---  acc:{}   loss:{}    --- '.format(cnt_acc / cnt_n, cnt_loss / cnt_n)) 
     return {k: "{:.4f}".format(meter.global_avg) for k, meter in metric_logger.meters.items()}
     
     
@@ -185,6 +197,7 @@ def main(args, config):
     
     max_epoch = config['schedular']['epochs']
     warmup_steps = config['schedular']['warmup_epochs']
+    accumulation_steps = config['accumulation_steps']
     best = 0
     best_epoch = 0
     
@@ -195,7 +208,17 @@ def main(args, config):
         if not args.evaluate:
             if args.distributed:
                 train_loader.sampler.set_epoch(epoch)
-            train_stats = train(model, train_loader, optimizer, tokenizer, epoch, warmup_steps, device, lr_scheduler, config)  
+            train_stats = train(
+                model, 
+                train_loader, 
+                optimizer, 
+                tokenizer, 
+                epoch, 
+                warmup_steps, 
+                device, 
+                lr_scheduler, 
+                config,
+                accumulation_steps) 
             
         val_stats = evaluate(model, val_loader, tokenizer, device, config)
         test_stats = evaluate(model, test_loader, tokenizer, device, config)
