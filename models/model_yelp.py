@@ -22,12 +22,20 @@ class ALBEF(nn.Module):
         self.distill = config['distill']
 
         self.visual_encoder = VisionTransformer(
-            img_size=config['image_res'], patch_size=16, embed_dim=768, depth=12, num_heads=12, 
-            mlp_ratio=4, qkv_bias=True, norm_layer=partial(nn.LayerNorm, eps=1e-6))    
+            img_size=config['image_res'], 
+            patch_size=16, 
+            embed_dim=768, 
+            depth=10, 
+            num_heads=12, 
+            mlp_ratio=4, 
+            qkv_bias=True, 
+            norm_layer=partial(nn.LayerNorm, eps=1e-6),
+            drop_rate=0.5,
+        )    
 
         bert_config = BertConfig.from_json_file(config['bert_config'])
 
-        self.text_encoder = BertModel.from_pretrained(text_encoder, config=bert_config, add_pooling_layer=False)          
+        self.text_encoder = BertModel.from_pretrained(text_encoder, config=bert_config, add_pooling_layer=False)
 
         self.cls_head = nn.Sequential(
                   nn.Linear(
@@ -45,8 +53,16 @@ class ALBEF(nn.Module):
 
         if self.distill:
             self.visual_encoder_m = VisionTransformer(
-                img_size=config['image_res'], patch_size=16, embed_dim=768, depth=12, num_heads=12, 
-                mlp_ratio=4, qkv_bias=True, norm_layer=partial(nn.LayerNorm, eps=1e-6))               
+                img_size=config['image_res'], 
+                patch_size=16, 
+                embed_dim=768, 
+                depth=10, 
+                num_heads=12, 
+                mlp_ratio=4, 
+                qkv_bias=True, 
+                norm_layer=partial(nn.LayerNorm, eps=1e-6),
+                drop_rate=0.5,
+            )
             self.text_encoder_m = BertModel.from_pretrained(text_encoder, config=bert_config, add_pooling_layer=False)      
             self.cls_head_m = nn.Sequential(
                     nn.Linear(
