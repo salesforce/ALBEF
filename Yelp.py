@@ -17,6 +17,9 @@ from torch.utils.data import DataLoader
 import torch.backends.cudnn as cudnn
 import torch.distributed as dist
 
+from apex import amp
+
+
 from models.model_yelp import ALBEF
 from models.vit import interpolate_pos_embed
 from models.tokenization_bert import BertTokenizer
@@ -67,11 +70,9 @@ def train(
         prediction, loss = model(images, text_inputs, device=device, label=label, train=True, alpha=alpha)    
         # loss = loss / accumulation_steps 
         optimizer.zero_grad()
-        loss.backward()
+        with amp.scale_loss(loss, optimizer) as scaled_loss:
+            scaled_loss.backward()
         optimizer.step()    
-        # if (i + 1) % accumulation_steps == 0:
-            # optimizer.step()
-            # optimizer.zero_grad()  
 
         _, pred_class = prediction.max(1)
         accuracy = (label==pred_class).sum() / label.size(0)
@@ -175,18 +176,21 @@ def main(args, config):
                     del state_dict[key]
                 
         msg = model.load_state_dict(state_dict,strict=False)
+        if 'amp' in checkpoint.keys():
+            amp.load_state_dict(checkpoint['amp'])
         print('load checkpoint from %s'%args.checkpoint)
         # print(msg)
 
     model = model.to(device)   
     
     model_without_ddp = model
+    optimizer = create_optimizer(arg_opt, model)
+    model, optimizer = amp.initialize(model, optimizer, opt_level='O1')
     if args.distributed:
-        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu])
+        model = apex.parallel.DistributedDataParallel(model, device_ids=[args.gpu])
         model_without_ddp = model.module    
     
     arg_opt = utils.AttrDict(config['optimizer'])
-    optimizer = create_optimizer(arg_opt, model)
     arg_sche = utils.AttrDict(config['schedular'])
     lr_scheduler, _ = create_scheduler(arg_sche, optimizer)  
     
@@ -244,6 +248,7 @@ def main(args, config):
                         'lr_scheduler': lr_scheduler.state_dict(),
                         'config': config,
                         'epoch': epoch,
+                        'amp': amp.state_dict
                     }
                     torch.save(save_obj, os.path.join(args.output_dir, 'checkpoint_best.pth')) 
                     best = float(val_stats['acc'])
