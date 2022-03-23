@@ -18,6 +18,7 @@ import torch.backends.cudnn as cudnn
 import torch.distributed as dist
 
 from apex import amp
+import apex
 
 
 from models.model_yelp import ALBEF
@@ -184,13 +185,13 @@ def main(args, config):
     model = model.to(device)   
     
     model_without_ddp = model
+    arg_opt = utils.AttrDict(config['optimizer'])
     optimizer = create_optimizer(arg_opt, model)
     model, optimizer = amp.initialize(model, optimizer, opt_level='O1')
     if args.distributed:
-        model = apex.parallel.DistributedDataParallel(model, device_ids=[args.gpu])
+        model = apex.parallel.DistributedDataParallel(model)
         model_without_ddp = model.module    
     
-    arg_opt = utils.AttrDict(config['optimizer'])
     arg_sche = utils.AttrDict(config['schedular'])
     lr_scheduler, _ = create_scheduler(arg_sche, optimizer)  
     

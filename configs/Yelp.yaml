@@ -6,11 +6,11 @@ test_file: 'test.json'
 
 
 image_res: 384
-batch_size_train: 4
+batch_size_train: 8
 batch_size_test: 64 
 
 alpha: 0.4
-distill: False
+distill: True
 warm_up: False
 
 bert_config: 'configs/config_bert.json'
