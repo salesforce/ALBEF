@@ -101,6 +101,7 @@ class ALBEF(nn.Module):
                                                   labels = answer_targets,
                                                   return_dict = True,   
                                                   soft_labels = F.softmax(logits_m,dim=-1),
+                                                  alpha = alpha,
                                                   reduction = 'none',
                                                  )   
             else:
