@@ -49,9 +49,9 @@ def train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device,
     
     if args.distributed:
         data_loader.sampler.set_epoch(epoch)
-
+import mixgen as mg
     for i, (image, text) in enumerate(metric_logger.log_every(data_loader, print_freq, header)):
-        
+        image, text = mg.mixgen(image, text, num=16)
         optimizer.zero_grad()
   
         image = image.to(device,non_blocking=True) 
