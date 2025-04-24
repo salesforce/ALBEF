@@ -21,7 +21,7 @@ class ALBEF(nn.Module):
         self.distill = config['distill']
 
         self.visual_encoder = VisionTransformer(
-            img_size=config['image_res'], patch_size=16, embed_dim=768, depth=12, num_heads=12, 
+            img_size=config['image_res'], patch_size=16, embed_dim=768, depth=6, num_heads=12, 
             mlp_ratio=4, qkv_bias=True, norm_layer=partial(nn.LayerNorm, eps=1e-6))    
 
         config_encoder = BertConfig.from_json_file(config['bert_config'])   
@@ -29,12 +29,12 @@ class ALBEF(nn.Module):
             
         config_decoder = BertConfig.from_json_file(config['bert_config'])
         config_decoder.fusion_layer = 0
-        config_decoder.num_hidden_layers = 6
+        config_decoder.num_hidden_layers = 3
         self.text_decoder = BertLMHeadModel.from_pretrained(text_decoder, config=config_decoder)    
 
         if self.distill:
             self.visual_encoder_m = VisionTransformer(
-                img_size=config['image_res'], patch_size=16, embed_dim=768, depth=12, num_heads=12, 
+                img_size=config['image_res'], patch_size=16, embed_dim=768, depth=6, num_heads=12, 
                 mlp_ratio=4, qkv_bias=True, norm_layer=partial(nn.LayerNorm, eps=1e-6))             
             self.text_encoder_m = BertModel.from_pretrained(text_encoder, config=config_encoder, add_pooling_layer=False)   
             self.text_decoder_m = BertLMHeadModel.from_pretrained(text_decoder, config=config_decoder)   

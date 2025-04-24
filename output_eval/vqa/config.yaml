@@ -1,0 +1,17 @@
+alpha: 0.4
+answer_list: data/answer_list.json
+batch_size_test: 32
+batch_size_train: 32
+bert_config: configs/config_bert.json
+distill: true
+eos: '[SEP]'
+image_res: 384
+k_test: 128
+optimizer: {lr: 2e-05, opt: adamW, weight_decay: 0.02}
+schedular: {cooldown_epochs: 0, decay_rate: 1, epochs: 8, lr: 2e-05, min_lr: 1e-06,
+  sched: cosine, warmup_epochs: 4, warmup_lr: 1e-05}
+test_file: [data/vqa_test.json]
+train_file: [data/vqa_train.json]
+vg_root: data/
+vqa_root: data/
+warm_up: true

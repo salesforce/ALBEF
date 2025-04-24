@@ -1,0 +1,676 @@
+{
+  "cells": [
+    {
+      "cell_type": "code",
+      "execution_count": 1,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "BOlAMw9uJGeC",
+        "outputId": "5cedd8ab-3a76-40dc-dfc7-b8baea3e0278"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Mounted at /content/drive\n"
+          ]
+        }
+      ],
+      "source": [
+        "from google.colab import drive\n",
+        "drive.mount('/content/drive')"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 2,
+      "metadata": {
+        "id": "BbGhbM4-JWWS",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "cf6bb0c4-20d2-464e-82d7-bb59dd397e28"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "/content/drive/MyDrive/ALBEF\n"
+          ]
+        }
+      ],
+      "source": [
+        "%cd drive/MyDrive/ALBEF"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 3,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "AzYHF4kTAIqc",
+        "outputId": "241d30aa-85f4-4344-9833-253e050b3f83"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Collecting transformers==4.25.1\n",
+            "  Downloading transformers-4.25.1-py3-none-any.whl.metadata (93 kB)\n",
+            "\u001b[?25l     \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m0.0/93.9 kB\u001b[0m \u001b[31m?\u001b[0m eta \u001b[36m-:--:--\u001b[0m\r\u001b[2K     \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m93.9/93.9 kB\u001b[0m \u001b[31m6.1 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hRequirement already satisfied: filelock in /usr/local/lib/python3.11/dist-packages (from transformers==4.25.1) (3.18.0)\n",
+            "Requirement already satisfied: huggingface-hub<1.0,>=0.10.0 in /usr/local/lib/python3.11/dist-packages (from transformers==4.25.1) (0.30.2)\n",
+            "Requirement already satisfied: numpy>=1.17 in /usr/local/lib/python3.11/dist-packages (from transformers==4.25.1) (2.0.2)\n",
+            "Requirement already satisfied: packaging>=20.0 in /usr/local/lib/python3.11/dist-packages (from transformers==4.25.1) (24.2)\n",
+            "Requirement already satisfied: pyyaml>=5.1 in /usr/local/lib/python3.11/dist-packages (from transformers==4.25.1) (6.0.2)\n",
+            "Requirement already satisfied: regex!=2019.12.17 in /usr/local/lib/python3.11/dist-packages (from transformers==4.25.1) (2024.11.6)\n",
+            "Requirement already satisfied: requests in /usr/local/lib/python3.11/dist-packages (from transformers==4.25.1) (2.32.3)\n",
+            "Collecting tokenizers!=0.11.3,<0.14,>=0.11.1 (from transformers==4.25.1)\n",
+            "  Downloading tokenizers-0.13.3-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (6.7 kB)\n",
+            "Requirement already satisfied: tqdm>=4.27 in /usr/local/lib/python3.11/dist-packages (from transformers==4.25.1) (4.67.1)\n",
+            "Requirement already satisfied: fsspec>=2023.5.0 in /usr/local/lib/python3.11/dist-packages (from huggingface-hub<1.0,>=0.10.0->transformers==4.25.1) (2025.3.2)\n",
+            "Requirement already satisfied: typing-extensions>=3.7.4.3 in /usr/local/lib/python3.11/dist-packages (from huggingface-hub<1.0,>=0.10.0->transformers==4.25.1) (4.13.2)\n",
+            "Requirement already satisfied: charset-normalizer<4,>=2 in /usr/local/lib/python3.11/dist-packages (from requests->transformers==4.25.1) (3.4.1)\n",
+            "Requirement already satisfied: idna<4,>=2.5 in /usr/local/lib/python3.11/dist-packages (from requests->transformers==4.25.1) (3.10)\n",
+            "Requirement already satisfied: urllib3<3,>=1.21.1 in /usr/local/lib/python3.11/dist-packages (from requests->transformers==4.25.1) (2.3.0)\n",
+            "Requirement already satisfied: certifi>=2017.4.17 in /usr/local/lib/python3.11/dist-packages (from requests->transformers==4.25.1) (2025.1.31)\n",
+            "Downloading transformers-4.25.1-py3-none-any.whl (5.8 MB)\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m5.8/5.8 MB\u001b[0m \u001b[31m70.4 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hDownloading tokenizers-0.13.3-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (7.8 MB)\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m7.8/7.8 MB\u001b[0m \u001b[31m121.3 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hInstalling collected packages: tokenizers, transformers\n",
+            "  Attempting uninstall: tokenizers\n",
+            "    Found existing installation: tokenizers 0.21.1\n",
+            "    Uninstalling tokenizers-0.21.1:\n",
+            "      Successfully uninstalled tokenizers-0.21.1\n",
+            "  Attempting uninstall: transformers\n",
+            "    Found existing installation: transformers 4.51.3\n",
+            "    Uninstalling transformers-4.51.3:\n",
+            "      Successfully uninstalled transformers-4.51.3\n",
+            "\u001b[31mERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.\n",
+            "sentence-transformers 3.4.1 requires transformers<5.0.0,>=4.41.0, but you have transformers 4.25.1 which is incompatible.\u001b[0m\u001b[31m\n",
+            "\u001b[0mSuccessfully installed tokenizers-0.13.3 transformers-4.25.1\n"
+          ]
+        }
+      ],
+      "source": [
+        "!pip install transformers==4.25.1"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 4,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "HsSwP8RyCTX6",
+        "outputId": "6b0e18f0-1823-423c-f04e-f01d8948b8a6"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Collecting ruamel.yaml==0.17.*\n",
+            "  Downloading ruamel.yaml-0.17.40-py3-none-any.whl.metadata (19 kB)\n",
+            "Collecting ruamel.yaml.clib>=0.2.7 (from ruamel.yaml==0.17.*)\n",
+            "  Downloading ruamel.yaml.clib-0.2.12-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (2.7 kB)\n",
+            "Downloading ruamel.yaml-0.17.40-py3-none-any.whl (113 kB)\n",
+            "\u001b[?25l   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m0.0/113.7 kB\u001b[0m \u001b[31m?\u001b[0m eta \u001b[36m-:--:--\u001b[0m\r\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m113.7/113.7 kB\u001b[0m \u001b[31m8.2 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hDownloading ruamel.yaml.clib-0.2.12-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (739 kB)\n",
+            "\u001b[?25l   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m0.0/739.1 kB\u001b[0m \u001b[31m?\u001b[0m eta \u001b[36m-:--:--\u001b[0m\r\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m739.1/739.1 kB\u001b[0m \u001b[31m44.3 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hInstalling collected packages: ruamel.yaml.clib, ruamel.yaml\n",
+            "Successfully installed ruamel.yaml-0.17.40 ruamel.yaml.clib-0.2.12\n"
+          ]
+        }
+      ],
+      "source": [
+        "!pip install ruamel.yaml==0.17.*"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 5,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "U4aO73sdK9xE",
+        "outputId": "b2f12cde-0286-4564-b5d6-700cef217cd1"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "/usr/local/lib/python3.11/dist-packages/timm/models/registry.py:4: FutureWarning: Importing from timm.models.registry is deprecated, please import via timm.models\n",
+            "  warnings.warn(f\"Importing from {__name__} is deprecated, please import via timm.models\", FutureWarning)\n",
+            "/usr/local/lib/python3.11/dist-packages/timm/models/layers/__init__.py:48: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers\n",
+            "  warnings.warn(f\"Importing from {__name__} is deprecated, please import via timm.layers\", FutureWarning)\n"
+          ]
+        }
+      ],
+      "source": [
+        "import argparse\n",
+        "import os\n",
+        "import ruamel.yaml as yaml\n",
+        "import numpy as np\n",
+        "import random\n",
+        "import time\n",
+        "import datetime\n",
+        "import json\n",
+        "from pathlib import Path\n",
+        "\n",
+        "import torch\n",
+        "import torch.nn as nn\n",
+        "import torch.nn.functional as F\n",
+        "from torch.utils.data import DataLoader\n",
+        "import torch.backends.cudnn as cudnn\n",
+        "import torch.distributed as dist\n",
+        "\n",
+        "from models.model_vqa import ALBEF\n",
+        "from models.vit import interpolate_pos_embed\n",
+        "from models.tokenization_bert import BertTokenizer\n",
+        "\n",
+        "import utils\n",
+        "from dataset.utils import save_result\n",
+        "from dataset import create_dataset, create_sampler, create_loader, vqa_collate_fn\n",
+        "\n",
+        "from scheduler import create_scheduler\n",
+        "from optim import create_optimizer"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 6,
+      "metadata": {
+        "id": "NJqXs_yTBK7C"
+      },
+      "outputs": [],
+      "source": [
+        "%load_ext autoreload\n",
+        "%autoreload 2"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 7,
+      "metadata": {
+        "id": "3A3XLl-ALYDG"
+      },
+      "outputs": [],
+      "source": [
+        "def train(model, data_loader, optimizer, tokenizer, epoch, warmup_steps, device, scheduler, config):\n",
+        "    # train\n",
+        "    model.train()\n",
+        "\n",
+        "    metric_logger = utils.MetricLogger(delimiter=\"  \")\n",
+        "    metric_logger.add_meter('lr', utils.SmoothedValue(window_size=1, fmt='{value:.6f}'))\n",
+        "    metric_logger.add_meter('loss', utils.SmoothedValue(window_size=1, fmt='{value:.4f}'))\n",
+        "\n",
+        "    header = 'Train Epoch: [{}]'.format(epoch)\n",
+        "    print_freq = 50\n",
+        "    step_size = 100\n",
+        "    warmup_iterations = warmup_steps*step_size\n",
+        "\n",
+        "    for i,(image, question, answer, weights, n) in enumerate(metric_logger.log_every(data_loader, print_freq, header)):\n",
+        "        image, weights = image.to(device,non_blocking=True), weights.to(device,non_blocking=True)\n",
+        "        question_input = tokenizer(question, padding='longest', truncation=True, max_length=25, return_tensors=\"pt\").to(device)\n",
+        "        answer_input = tokenizer(answer, padding='longest', return_tensors=\"pt\").to(device)\n",
+        "\n",
+        "        if epoch>0 or not config['warm_up']:\n",
+        "            alpha = config['alpha']\n",
+        "        else:\n",
+        "            alpha = config['alpha']*min(1,i/len(data_loader))\n",
+        "\n",
+        "        loss = model(image, question_input, answer_input, train=True, alpha=alpha, k=n, weights=weights)\n",
+        "\n",
+        "        optimizer.zero_grad()\n",
+        "        loss.backward()\n",
+        "        optimizer.step()\n",
+        "\n",
+        "        metric_logger.update(loss=loss.item())\n",
+        "        metric_logger.update(lr=optimizer.param_groups[0][\"lr\"])\n",
+        "\n",
+        "        if epoch==0 and i%step_size==0 and i<=warmup_iterations:\n",
+        "            scheduler.step(i//step_size)\n",
+        "\n",
+        "    # gather the stats from all processes\n",
+        "    metric_logger.synchronize_between_processes()\n",
+        "    print(\"Averaged stats:\", metric_logger.global_avg())\n",
+        "    return {k: \"{:.3f}\".format(meter.global_avg) for k, meter in metric_logger.meters.items()}"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 8,
+      "metadata": {
+        "id": "d5ug9dufNECg"
+      },
+      "outputs": [],
+      "source": [
+        "@torch.no_grad()\n",
+        "def evaluation(model, data_loader, tokenizer, device, config) :\n",
+        "    # test\n",
+        "    model.eval()\n",
+        "\n",
+        "    metric_logger = utils.MetricLogger(delimiter=\"  \")\n",
+        "    header = 'Generate VQA test result:'\n",
+        "    print_freq = 50\n",
+        "\n",
+        "    result = []\n",
+        "\n",
+        "    answer_list = [answer+config['eos'] for answer in data_loader.dataset.answer_list]\n",
+        "    answer_input = tokenizer(answer_list, padding='longest', return_tensors='pt').to(device)\n",
+        "\n",
+        "    for n, (image, question, question_id) in enumerate(metric_logger.log_every(data_loader, print_freq, header)):\n",
+        "        image = image.to(device,non_blocking=True)\n",
+        "        question_input = tokenizer(question, padding='longest', return_tensors=\"pt\").to(device)\n",
+        "\n",
+        "        topk_ids, topk_probs = model(image, question_input, answer_input, train=False, k=config['k_test'])\n",
+        "\n",
+        "        for ques_id, topk_id, topk_prob in zip(question_id, topk_ids, topk_probs):\n",
+        "            ques_id = int(ques_id.item())\n",
+        "            _, pred = topk_prob.max(dim=0)\n",
+        "            result.append({\"question_id\":ques_id, \"answer\":data_loader.dataset.answer_list[topk_id[pred]]})\n",
+        "\n",
+        "    return result"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "\n",
+        "import requests\n",
+        "import os\n",
+        "\n",
+        "# Final direct URL (avoid redirects from Google)\n",
+        "url = \"https://storage.googleapis.com/sfr-pcl-data-research/ALBEF/ALBEF.pth\"\n",
+        "output_path = \"ALBEF.pth\"\n",
+        "\n",
+        "def download_model(url, save_path):\n",
+        "    print(f\"Downloading model from {url}\")\n",
+        "    response = requests.get(url, stream=True)\n",
+        "    response.raise_for_status()  # Raise error for bad responses\n",
+        "\n",
+        "    total = int(response.headers.get('content-length', 0))\n",
+        "    with open(save_path, 'wb') as file, \\\n",
+        "            requests.get(url, stream=True) as r:\n",
+        "        for chunk in r.iter_content(chunk_size=8192):\n",
+        "            if chunk:\n",
+        "                file.write(chunk)\n",
+        "\n",
+        "    print(f\"Model saved to {save_path}\")\n",
+        "\n",
+        "download_model(url, output_path)\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "8v81ybraYsqH",
+        "outputId": "35daf8cd-0102-487d-b25e-617e384559a9"
+      },
+      "execution_count": 9,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Downloading model from https://storage.googleapis.com/sfr-pcl-data-research/ALBEF/ALBEF.pth\n",
+            "Model saved to ALBEF.pth\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "\n",
+        "url = \"https://storage.googleapis.com/sfr-pcl-data-research/ALBEF/ALBEF_4M.pth\"\n",
+        "output_path = \"ALBEF_4M.pth\"\n",
+        "download_model(url, output_path)\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "FmuYLwkPY0lh",
+        "outputId": "918c6eb2-31c2-49fb-d360-12d2baecb7d6"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Downloading model from https://storage.googleapis.com/sfr-pcl-data-research/ALBEF/ALBEF_4M.pth\n",
+            "Model saved to ALBEF_4M.pth\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 10,
+      "metadata": {
+        "id": "WF3LfY8KNrb5"
+      },
+      "outputs": [],
+      "source": [
+        "args = argparse.Namespace()\n",
+        "args.config = './configs/VQA.yaml'\n",
+        "args.checkpoint = './ALBEF_4M.pth'\n",
+        "args.output_dir = './output/vqa'\n",
+        "args.evaluate = False\n",
+        "args.text_encoder = 'bert-base-uncased'\n",
+        "args.text_decoder = 'bert-base-uncased'\n",
+        "args.device = 'cuda'\n",
+        "args.seed = 42\n",
+        "args.distributed = True\n",
+        "\n",
+        "config = yaml.load(open(args.config, 'r'), Loader=yaml.Loader)"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 11,
+      "metadata": {
+        "id": "X6X0AQ1kQbMA"
+      },
+      "outputs": [],
+      "source": [
+        "args.result_dir = os.path.join(args.output_dir, 'result')\n",
+        "\n",
+        "Path(args.output_dir).mkdir(parents=True, exist_ok=True)\n",
+        "Path(args.result_dir).mkdir(parents=True, exist_ok=True)\n",
+        "\n",
+        "yaml.dump(config, open(os.path.join(args.output_dir, 'config.yaml'), 'w'))"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 490
+        },
+        "id": "t6hxLvhha5jF",
+        "outputId": "a7153819-54f2-4dc6-b6dd-33d59c2b7fee"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Not using distributed mode\n",
+            "Creating vqa datasets\n"
+          ]
+        },
+        {
+          "output_type": "error",
+          "ename": "FileNotFoundError",
+          "evalue": "[Errno 2] No such file or directory: 'data/vqa_train.json'",
+          "traceback": [
+            "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+            "\u001b[0;31mFileNotFoundError\u001b[0m                         Traceback (most recent call last)",
+            "\u001b[0;32m<ipython-input-16-bef3115562c6>\u001b[0m in \u001b[0;36m<cell line: 0>\u001b[0;34m()\u001b[0m\n\u001b[1;32m     17\u001b[0m \u001b[0;31m#### Dataset ####\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     18\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m\"Creating vqa datasets\"\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 19\u001b[0;31m \u001b[0mdatasets\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mcreate_dataset\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m'vqa'\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mconfig\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     20\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     21\u001b[0m \u001b[0;32mif\u001b[0m \u001b[0margs\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mdistributed\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/content/drive/MyDrive/ALBEF/dataset/__init__.py\u001b[0m in \u001b[0;36mcreate_dataset\u001b[0;34m(dataset, config)\u001b[0m\n\u001b[1;32m     49\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     50\u001b[0m     \u001b[0;32melif\u001b[0m \u001b[0mdataset\u001b[0m\u001b[0;34m==\u001b[0m\u001b[0;34m'vqa'\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 51\u001b[0;31m         \u001b[0mtrain_dataset\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mvqa_dataset\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mconfig\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m'train_file'\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mtrain_transform\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mconfig\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m'vqa_root'\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mconfig\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m'vg_root'\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0msplit\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;34m'train'\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     52\u001b[0m         \u001b[0mvqa_test_dataset\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mvqa_dataset\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mconfig\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m'test_file'\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mtest_transform\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mconfig\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m'vqa_root'\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mconfig\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m'vg_root'\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0msplit\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;34m'test'\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0manswer_list\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0mconfig\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m'answer_list'\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     53\u001b[0m         \u001b[0;32mreturn\u001b[0m \u001b[0mtrain_dataset\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mvqa_test_dataset\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/content/drive/MyDrive/ALBEF/dataset/vqa_dataset.py\u001b[0m in \u001b[0;36m__init__\u001b[0;34m(self, ann_file, transform, vqa_root, vg_root, eos, split, max_ques_words, answer_list)\u001b[0m\n\u001b[1;32m     12\u001b[0m         \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mann\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0;34m[\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     13\u001b[0m         \u001b[0;32mfor\u001b[0m \u001b[0mf\u001b[0m \u001b[0;32min\u001b[0m \u001b[0mann_file\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 14\u001b[0;31m             \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mann\u001b[0m \u001b[0;34m+=\u001b[0m \u001b[0mjson\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mload\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mopen\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mf\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m'r'\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     15\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     16\u001b[0m         \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mtransform\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mtransform\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;31mFileNotFoundError\u001b[0m: [Errno 2] No such file or directory: 'data/vqa_train.json'"
+          ]
+        }
+      ],
+      "source": [
+        "utils.init_distributed_mode(args)\n",
+        "\n",
+        "device = torch.device(args.device)\n",
+        "\n",
+        "# fix the seed for reproducibility\n",
+        "seed = args.seed + utils.get_rank()\n",
+        "torch.manual_seed(seed)\n",
+        "np.random.seed(seed)\n",
+        "random.seed(seed)\n",
+        "cudnn.benchmark = True\n",
+        "\n",
+        "start_epoch = 0\n",
+        "max_epoch = config['schedular']['epochs']\n",
+        "warmup_steps = config['schedular']['warmup_epochs']\n",
+        "\n",
+        "\n",
+        "#### Dataset ####\n",
+        "print(\"Creating vqa datasets\")\n",
+        "datasets = create_dataset('vqa', config)\n",
+        "\n",
+        "if args.distributed:\n",
+        "    num_tasks = utils.get_world_size()\n",
+        "    global_rank = utils.get_rank()\n",
+        "    samplers = create_sampler(datasets, [True, False], num_tasks, global_rank)\n",
+        "else:\n",
+        "    samplers = [None, None]\n",
+        "\n",
+        "train_loader, test_loader = create_loader(datasets,samplers,\n",
+        "                                          batch_size=[config['batch_size_train'],config['batch_size_test']],\n",
+        "                                          num_workers=[4,4],is_trains=[True, False],\n",
+        "                                          collate_fns=[vqa_collate_fn,None])\n",
+        "\n",
+        "tokenizer = BertTokenizer.from_pretrained(args.text_encoder)\n",
+        "\n",
+        "#### Model ####\n",
+        "print(\"Creating model\")\n",
+        "model = ALBEF(config=config, text_encoder=args.text_encoder, text_decoder=args.text_decoder, tokenizer=tokenizer)\n",
+        "model = model.to(device)\n",
+        "\n",
+        "arg_opt = utils.AttrDict(config['optimizer'])\n",
+        "optimizer = create_optimizer(arg_opt, model)\n",
+        "arg_sche = utils.AttrDict(config['schedular'])\n",
+        "lr_scheduler, _ = create_scheduler(arg_sche, optimizer)\n",
+        "\n",
+        "if args.checkpoint:\n",
+        "    checkpoint = torch.load(args.checkpoint, map_location='cpu')\n",
+        "    if args.evaluate:\n",
+        "        state_dict = checkpoint\n",
+        "    else:\n",
+        "        state_dict = checkpoint['model']\n",
+        "\n",
+        "    # reshape positional embedding to accomodate for image resolution change\n",
+        "    pos_embed_reshaped = interpolate_pos_embed(state_dict['visual_encoder.pos_embed'],model.visual_encoder)\n",
+        "    state_dict['visual_encoder.pos_embed'] = pos_embed_reshaped\n",
+        "\n",
+        "    if not args.evaluate:\n",
+        "        if config['distill']:\n",
+        "            m_pos_embed_reshaped = interpolate_pos_embed(state_dict['visual_encoder_m.pos_embed'],model.visual_encoder_m)\n",
+        "            state_dict['visual_encoder_m.pos_embed'] = m_pos_embed_reshaped\n",
+        "\n",
+        "        for key in list(state_dict.keys()):\n",
+        "            if 'bert' in key:\n",
+        "                encoder_key = key.replace('bert.','')\n",
+        "                state_dict[encoder_key] = state_dict[key]\n",
+        "            # intialize text decoder as multimodal encoder (last 6 layers of model.text_encoder)\n",
+        "            if 'text_encoder' in key:\n",
+        "                if 'layer' in key:\n",
+        "                    encoder_keys = key.split('.')\n",
+        "                    layer_num = int(encoder_keys[4])\n",
+        "                    if layer_num<6:\n",
+        "                        del state_dict[key]\n",
+        "                        continue\n",
+        "                    else:\n",
+        "                        decoder_layer_num = (layer_num-6)\n",
+        "                        encoder_keys[4] = str(decoder_layer_num)\n",
+        "                        encoder_key = '.'.join(encoder_keys)\n",
+        "                else:\n",
+        "                    encoder_key = key\n",
+        "                decoder_key = encoder_key.replace('text_encoder','text_decoder')\n",
+        "                state_dict[decoder_key] = state_dict[key]\n",
+        "\n",
+        "                del state_dict[key]\n",
+        "\n",
+        "    msg = model.load_state_dict(state_dict,strict=False)\n",
+        "    print('load checkpoint from %s'%args.checkpoint)\n",
+        "    print(msg)\n",
+        "\n",
+        "\n",
+        "model_without_ddp = model\n",
+        "if args.distributed:\n",
+        "    model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu])\n",
+        "    model_without_ddp = model.module\n",
+        "\n",
+        "\n",
+        "print(\"Start training\")\n",
+        "start_time = time.time()\n",
+        "\n",
+        "for epoch in range(start_epoch, max_epoch):\n",
+        "    if epoch>0:\n",
+        "        lr_scheduler.step(epoch+warmup_steps)\n",
+        "\n",
+        "    if not args.evaluate:\n",
+        "        if args.distributed:\n",
+        "            train_loader.sampler.set_epoch(epoch)\n",
+        "\n",
+        "        train_stats = train(model, train_loader, optimizer, tokenizer, epoch, warmup_steps, device, lr_scheduler, config)\n",
+        "\n",
+        "    if args.evaluate:\n",
+        "        break\n",
+        "\n",
+        "    if utils.is_main_process():\n",
+        "        log_stats = {**{f'train_{k}': v for k, v in train_stats.items()},\n",
+        "                      'epoch': epoch,\n",
+        "                    }\n",
+        "        with open(os.path.join(args.output_dir, \"log.txt\"),\"a\") as f:\n",
+        "            f.write(json.dumps(log_stats) + \"\\n\")\n",
+        "\n",
+        "        save_obj = {\n",
+        "            'model': model_without_ddp.state_dict(),\n",
+        "            'optimizer': optimizer.state_dict(),\n",
+        "            'lr_scheduler': lr_scheduler.state_dict(),\n",
+        "            'config': config,\n",
+        "            'epoch': epoch,\n",
+        "        }\n",
+        "        torch.save(save_obj, os.path.join(args.output_dir, 'checkpoint_%02d.pth'%epoch))\n",
+        "\n",
+        "    dist.barrier()\n",
+        "\n",
+        "vqa_result = evaluation(model, test_loader, tokenizer, device, config)\n",
+        "result_file = save_result(vqa_result, args.result_dir, 'vqa_result_epoch%d'%epoch)\n",
+        "\n",
+        "total_time = time.time() - start_time\n",
+        "total_time_str = str(datetime.timedelta(seconds=int(total_time)))\n",
+        "print('Training time {}'.format(total_time_str))"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import os\n",
+        "import urllib.request\n",
+        "import zipfile\n",
+        "\n",
+        "# Create base directory\n",
+        "base_dir = \"data/vqa\"\n",
+        "os.makedirs(base_dir, exist_ok=True)\n",
+        "\n",
+        "# List of (URL, local filename)\n",
+        "vqa_files = [\n",
+        "    # Questions\n",
+        "    (\"https://s3.amazonaws.com/cvmlp/vqa/mscoco/vqa/v2_Questions_Train_mscoco.zip\", \"vqa_train.zip\"),\n",
+        "    (\"https://s3.amazonaws.com/cvmlp/vqa/mscoco/vqa/v2_Questions_Val_mscoco.zip\", \"vqa_val.zip\"),\n",
+        "    (\"https://s3.amazonaws.com/cvmlp/vqa/mscoco/vqa/v2_Questions_Test_mscoco.zip\", \"vqa_test.zip\"),\n",
+        "\n",
+        "    # # Annotations\n",
+        "    # (\"https://s3.amazonaws.com/cvmlp/vqa/mscoco/vqa/v2_Annotations_Train_mscoco.zip\", \"v2_Annotations_Train_mscoco.zip\"),\n",
+        "    # (\"https://s3.amazonaws.com/cvmlp/vqa/mscoco/vqa/v2_Annotations_Val_mscoco.zip\", \"v2_Annotations_Val_mscoco.zip\"),\n",
+        "\n",
+        "    # # Images\n",
+        "    # (\"http://images.cocodataset.org/zips/train2014.zip\", \"train2014.zip\"),\n",
+        "    # (\"http://images.cocodataset.org/zips/val2014.zip\", \"val2014.zip\"),\n",
+        "    # (\"http://images.cocodataset.org/zips/test2015.zip\", \"test2015.zip\"),\n",
+        "]\n",
+        "\n",
+        "def download_and_extract(url, dest_path):\n",
+        "    print(f\"Downloading from {url}...\")\n",
+        "    urllib.request.urlretrieve(url, dest_path)\n",
+        "    print(f\"Extracting {dest_path}...\")\n",
+        "    with zipfile.ZipFile(dest_path, 'r') as zip_ref:\n",
+        "        zip_ref.extractall(base_dir)\n",
+        "    os.remove(dest_path)\n",
+        "    print(f\"Completed: {dest_path}\")\n",
+        "\n",
+        "for url, filename in vqa_files:\n",
+        "    try:\n",
+        "        download_and_extract(url, os.path.join(base_dir, filename))\n",
+        "    except Exception as e:\n",
+        "        print(f\"Error processing {url}: {e}\")\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "bz7KlBLFZaA_",
+        "outputId": "5e326719-780c-42ca-e604-e3aac09fc517"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Downloading from https://s3.amazonaws.com/cvmlp/vqa/mscoco/vqa/v2_Questions_Train_mscoco.zip...\n",
+            "Extracting data/vqa/vqa_train.zip...\n",
+            "Completed: data/vqa/vqa_train.zip\n",
+            "Downloading from https://s3.amazonaws.com/cvmlp/vqa/mscoco/vqa/v2_Questions_Val_mscoco.zip...\n",
+            "Extracting data/vqa/vqa_val.zip...\n",
+            "Completed: data/vqa/vqa_val.zip\n",
+            "Downloading from https://s3.amazonaws.com/cvmlp/vqa/mscoco/vqa/v2_Questions_Test_mscoco.zip...\n",
+            "Extracting data/vqa/vqa_test.zip...\n",
+            "Completed: data/vqa/vqa_test.zip\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "uLJMHFEhQeuG"
+      },
+      "outputs": [],
+      "source": [
+        "!cp -r output drive/MyDrive/ALBEF/"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "id": "WHpzQDBDbvTF"
+      },
+      "execution_count": null,
+      "outputs": []
+    }
+  ],
+  "metadata": {
+    "accelerator": "GPU",
+    "colab": {
+      "gpuType": "A100",
+      "provenance": []
+    },
+    "kernelspec": {
+      "display_name": "Python 3",
+      "name": "python3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 0
+}
